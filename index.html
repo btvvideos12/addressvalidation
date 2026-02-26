@@ -6,331 +6,446 @@
 <title>Bharath Search — All Sources, One Result</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root {
-  --bg: #f7f5f0; --ink: #0e0e0e; --muted: #7a7775; --line: #e0ddd8;
-  --usps-c: #E31837; --smarty-c: #1a56e8; --spokeo-c: #1a1a1a; --gmaps-c: #34A853;
-  --usps-bg: #fff5f5; --smarty-bg: #f0f4ff; --spokeo-bg: #f5f5f5; --gmaps-bg: #f0fff4;
-  --white: #ffffff; --shadow: 0 2px 24px rgba(0,0,0,0.07); --shadow-lg: 0 8px 48px rgba(0,0,0,0.12);
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f2f0ec;--ink:#0d0d0d;--mut:#79766f;--ln:#dbd8d2;
+  --uc:#004B87;--ur:#E31837;--sc:#1a56e8;--pkc:#00897b;--gc:#2e7d32;
+  --ubg:#edf2fa;--sbg:#eef2ff;--pkbg:#e0f2f1;--gbg:#e8f5e9;
+  --w:#fff;--sh:0 2px 18px rgba(0,0,0,0.065);--shl:0 8px 36px rgba(0,0,0,0.12);
 }
-html { scroll-behavior: smooth; }
-body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;}
 
 /* HERO */
-.hero { background: var(--ink); padding: 52px 24px 0; position: relative; overflow: hidden; }
-.hero::before {
-  content: ''; position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
-              repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
-  pointer-events: none;
-}
-.hero-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-.brand-row { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
-.brand-mark {
-  width: 46px; height: 46px; background: linear-gradient(135deg, #E31837, #1a56e8);
-  border-radius: 12px; display: flex; align-items: center; justify-content: center;
-  font-family: 'Playfair Display', serif; font-weight: 900; font-size: 24px; color: white;
-  flex-shrink: 0; box-shadow: 0 4px 16px rgba(227,24,55,0.4);
-}
-.brand-name { font-family: 'Playfair Display', serif; font-weight: 900; font-size: 28px; color: #fff; letter-spacing: -0.5px; }
-.brand-tagline { font-size: 10px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; letter-spacing: 2.5px; text-transform: uppercase; }
-.hero-headline { font-family: 'Playfair Display', serif; font-size: clamp(34px,5.5vw,68px); font-weight: 900; color: #fff; line-height: 1.05; margin-bottom: 8px; letter-spacing: -1px; }
-.hero-headline span { background: linear-gradient(90deg, #E31837, #ff7c8a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hero-sub { color: rgba(255,255,255,0.45); font-size: 15px; margin-bottom: 36px; font-weight: 300; }
+.hero{background:#07090f;padding:46px 20px 0;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,0.02) 40px),
+             repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,0.02) 40px);
+  pointer-events:none;}
+.hero::after{content:'';position:absolute;top:-80px;right:-80px;width:420px;height:420px;
+  background:radial-gradient(circle,rgba(26,86,232,0.12) 0%,transparent 68%);pointer-events:none;}
+.hi{max-width:1240px;margin:0 auto;position:relative;z-index:1;}
+.brow{display:flex;align-items:center;gap:13px;margin-bottom:26px;}
+.bmark{width:46px;height:46px;background:linear-gradient(135deg,#E31837,#004B87);border-radius:13px;
+  display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;
+  font-weight:900;font-size:24px;color:#fff;flex-shrink:0;box-shadow:0 5px 18px rgba(227,24,55,0.32);}
+.bname{font-family:'Playfair Display',serif;font-weight:900;font-size:27px;color:#fff;letter-spacing:-0.5px;}
+.btag{font-size:10px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace;letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
+.hh{font-family:'Playfair Display',serif;font-size:clamp(28px,4.5vw,58px);font-weight:900;color:#fff;line-height:1.07;margin-bottom:9px;letter-spacing:-1px;}
+.hh em{background:linear-gradient(90deg,#E31837,#ff8c9a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal;}
+.hsub{color:rgba(255,255,255,0.36);font-size:13px;margin-bottom:34px;font-weight:300;line-height:1.75;}
 
 /* SEARCH */
-.search-bar-wrap { background: #fff; border-radius: 16px 16px 0 0; padding: 24px 24px 0; box-shadow: 0 -4px 40px rgba(0,0,0,0.3); }
-.search-form { display: flex; gap: 12px; align-items: stretch; margin-bottom: 18px; }
-.search-icon-wrap { display: flex; align-items: center; justify-content: center; width: 48px; flex-shrink: 0; color: var(--muted); }
-.search-icon-wrap svg { width: 20px; height: 20px; }
-.search-input-wrap { flex: 1; }
-.search-input { width: 100%; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 17px; font-weight: 500; color: var(--ink); background: transparent; padding: 14px 0; border-bottom: 2px solid var(--line); transition: border-color 0.2s; }
-.search-input:focus { border-color: var(--ink); }
-.search-input::placeholder { color: #bbb; font-weight: 300; }
-.search-btn { background: var(--ink); color: #fff; border: none; border-radius: 12px; padding: 0 28px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s, transform 0.15s; white-space: nowrap; }
-.search-btn:hover { background: #1a56e8; transform: translateY(-1px); }
-.search-btn:active { transform: translateY(0); }
-.search-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-.source-pills { display: flex; gap: 8px; padding-bottom: 18px; flex-wrap: wrap; }
-.source-pill { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.5px; padding: 4px 11px; border-radius: 20px; border: 1.5px solid var(--line); color: var(--muted); }
-.pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+.sw{background:#fff;border-radius:18px 18px 0 0;padding:22px 22px 0;box-shadow:0 -8px 44px rgba(0,0,0,0.3);}
+.srow{display:flex;gap:9px;align-items:center;margin-bottom:11px;}
+.sico{flex-shrink:0;color:#aaa;display:flex;}
+.sico svg{width:18px;height:18px;}
+.inp{flex:1;border:none;outline:none;font-family:'DM Mono',monospace;font-size:13.5px;color:var(--ink);
+  background:transparent;padding:12px 10px;border-bottom:2px solid var(--ln);transition:border-color 0.2s;letter-spacing:0.4px;}
+.inp:focus{border-color:#004B87;}
+.inp::placeholder{color:#c5c0bb;font-family:'DM Sans',sans-serif;letter-spacing:0;font-size:13px;}
+.sbtn{background:#07090f;color:#fff;border:none;border-radius:10px;padding:12px 24px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;}
+.sbtn:hover{background:#1a56e8;transform:translateY(-1px);box-shadow:0 5px 18px rgba(26,86,232,0.25);}
+.sbtn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* ── VALIDATION BANNER ── */
+.vb{display:none;align-items:center;gap:10px;padding:10px 15px;border-radius:9px;
+  margin-bottom:11px;font-family:'DM Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.2px;}
+.vb.show{display:flex;}
+.vb.ok{background:#e8f5e9;color:#1b5e20;border:1.5px solid #a5d6a7;}
+.vb.ng{background:#ffebee;color:#b71c1c;border:1.5px solid #ef9a9a;}
+.vi{font-size:16px;flex-shrink:0;}
+
+.pills{display:flex;gap:6px;padding-bottom:17px;flex-wrap:wrap;}
+.pill{display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;font-size:9.5px;
+  padding:4px 10px;border-radius:20px;border:1.5px solid var(--ln);color:var(--mut);}
+.pd{width:6px;height:6px;border-radius:50%;}
 
 /* MAIN */
-.main { max-width: 1200px; margin: 0 auto; padding: 36px 24px 80px; }
+.main{max-width:1240px;margin:0 auto;padding:34px 20px 90px;}
 
 /* Empty */
-.empty-state { text-align: center; padding: 80px 24px; color: var(--muted); }
-.empty-state svg { width: 56px; height: 56px; opacity: 0.18; margin-bottom: 16px; }
-.empty-state h3 { font-size: 18px; color: var(--ink); margin-bottom: 6px; font-family: 'Playfair Display', serif; }
-.example-addresses { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
-.ex-chip { background: #fff; border: 1.5px solid var(--line); border-radius: 8px; padding: 8px 16px; font-size: 13px; color: var(--ink); cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; font-weight: 500; }
-.ex-chip:hover { border-color: #1a56e8; box-shadow: 0 2px 12px rgba(26,86,232,0.12); }
+.es{text-align:center;padding:68px 20px;}
+.ei{font-size:48px;opacity:0.2;margin-bottom:13px;}
+.es h3{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink);margin-bottom:6px;}
+.es p{font-size:13px;color:var(--mut);line-height:1.65;max-width:440px;margin:0 auto;}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px;}
+.chip{background:#fff;border:1.5px solid var(--ln);border-radius:7px;padding:7px 13px;font-size:10.5px;
+  color:var(--ink);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;line-height:1.5;text-align:left;}
+.chip small{display:block;color:var(--mut);font-size:9px;margin-top:2px;font-family:'DM Sans',sans-serif;}
+.chip:hover{border-color:#1a56e8;color:#1a56e8;}
 
 /* Loading */
-.loading-overlay { display: none; text-align: center; padding: 60px 24px; }
-.loading-overlay.show { display: block; }
-.loading-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
-.loading-dot { width: 10px; height: 10px; border-radius: 50%; animation: dotPulse 1.2s ease infinite; }
-.loading-dot:nth-child(1) { background: var(--usps-c); animation-delay: 0s; }
-.loading-dot:nth-child(2) { background: var(--smarty-c); animation-delay: 0.15s; }
-.loading-dot:nth-child(3) { background: #555; animation-delay: 0.3s; }
-.loading-dot:nth-child(4) { background: var(--gmaps-c); animation-delay: 0.45s; }
-@keyframes dotPulse { 0%,80%,100% { transform:scale(0.7);opacity:0.4; } 40% { transform:scale(1.3);opacity:1; } }
-.loading-text { font-size: 14px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.loading-sources { display: flex; justify-content: center; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
-.loading-source { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-.loading-spinner { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: currentColor; border-radius: 50%; animation: spin 0.8s linear infinite; }
-.ls-usps { color: var(--usps-c); } .ls-smarty { color: var(--smarty-c); } .ls-spokeo { color: #555; } .ls-gmaps { color: var(--gmaps-c); }
-@keyframes spin { to { transform: rotate(360deg); } }
+.ld{display:none;text-align:center;padding:60px 20px;}
+.ld.show{display:block;}
+.dots{display:flex;justify-content:center;gap:7px;margin-bottom:18px;}
+.dot{width:10px;height:10px;border-radius:50%;animation:dp 1.25s ease infinite;}
+.dot:nth-child(1){background:#E31837;animation-delay:0s;}
+.dot:nth-child(2){background:#1a56e8;animation-delay:0.18s;}
+.dot:nth-child(3){background:#00897b;animation-delay:0.36s;}
+.dot:nth-child(4){background:#2e7d32;animation-delay:0.54s;}
+@keyframes dp{0%,80%,100%{transform:scale(0.65);opacity:0.35;}40%{transform:scale(1.3);opacity:1;}}
+.lt{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--mut);margin-bottom:13px;}
+.lsrcs{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;}
+.lsrc{display:flex;align-items:center;gap:5px;font-size:11px;}
+.lsp{width:11px;height:11px;border:2px solid var(--ln);border-top-color:currentColor;border-radius:50%;animation:lspin 0.8s linear infinite;}
+@keyframes lspin{to{transform:rotate(360deg);}}
 
 /* Results */
-.results-wrap { display: none; }
-.results-wrap.show { display: block; }
-.results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 10px; }
-.results-address-label { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
-.results-address-label span { color: var(--muted); font-style: italic; }
-.results-meta { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.res{display:none;}
+.res.show{display:block;}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px;}
+.rt{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;}
+.rt em{color:var(--mut);font-style:italic;}
+.rm{font-family:'DM Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:1px;}
 
-/* MAP SECTION */
-.map-section { margin-bottom: 24px; border-radius: 16px; overflow: hidden; border: 1.5px solid var(--line); box-shadow: var(--shadow); animation: cardIn 0.5s ease both; }
-.map-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--gmaps-bg); border-bottom: 1.5px solid #c8f0d4; }
-.map-header-left { display: flex; align-items: center; gap: 10px; }
-.map-logo-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--gmaps-c); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.map-logo-name { font-weight: 700; font-size: 14px; color: var(--gmaps-c); }
-.map-logo-sub { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.map-btn-group { display: flex; gap: 8px; align-items: center; }
-.map-toggle-btn { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); background: #fff; text-decoration: none; border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; }
-.map-toggle-btn:hover, .map-toggle-btn.active { color: var(--gmaps-c); border-color: var(--gmaps-c); background: var(--gmaps-bg); }
-.map-ext-link { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; border: 1.5px solid var(--line); border-radius: 6px; padding: 4px 10px; transition: all 0.2s; }
-.map-ext-link:hover { color: var(--ink); border-color: var(--ink); }
-
-#mapFrame { width: 100%; height: 360px; border: none; display: block; background: #eee; }
-
-.map-meta-bar { display: flex; background: #fff; border-top: 1.5px solid var(--line); flex-wrap: wrap; }
-.map-meta-item { flex: 1; min-width: 90px; padding: 11px 14px; border-right: 1px solid var(--line); text-align: center; }
-.map-meta-item:last-child { border-right: none; }
-.map-meta-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.map-meta-val { font-size: 13px; font-weight: 700; }
-.map-meta-val.green { color: var(--gmaps-c); }
+/* MAP */
+.mc{background:#fff;border-radius:15px;overflow:hidden;border:1.5px solid var(--ln);
+  box-shadow:var(--sh);margin-bottom:18px;animation:fu .5s ease both;}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:13px 17px;
+  background:var(--gbg);border-bottom:1.5px solid #c3eecb;flex-wrap:wrap;gap:8px;}
+.mhl{display:flex;align-items:center;gap:8px;}
+.mhi{width:30px;height:30px;border-radius:7px;background:#34A853;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.mhn{font-weight:700;font-size:13px;color:#1b5e20;}
+.mhs{font-size:9.5px;color:var(--mut);font-family:'DM Mono',monospace;}
+.mtabs{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.mtab{font-family:'DM Mono',monospace;font-size:10px;color:var(--mut);background:#fff;
+  border:1.5px solid var(--ln);border-radius:6px;padding:4px 11px;cursor:pointer;transition:all 0.2s;}
+.mtab:hover,.mtab.on{color:#2e7d32;border-color:#34A853;background:var(--gbg);}
+.mext{font-family:'DM Mono',monospace;font-size:10px;color:var(--mut);text-decoration:none;
+  border:1.5px solid var(--ln);border-radius:6px;padding:4px 11px;background:#fff;transition:all 0.2s;}
+.mext:hover{color:var(--ink);border-color:var(--ink);}
+#mf{width:100%;height:350px;border:none;display:block;background:#e2e2e2;}
+.mmbar{display:flex;background:#fff;border-top:1.5px solid var(--ln);flex-wrap:wrap;}
+.mmi{flex:1;min-width:78px;padding:10px 12px;border-right:1px solid var(--ln);text-align:center;}
+.mmi:last-child{border-right:none;}
+.mml{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:2px;}
+.mmv{font-size:12px;font-weight:700;}
+.mmv.g{color:#34A853;}
+.mmv a{color:#34A853;font-size:11px;font-family:'DM Mono',monospace;text-decoration:none;}
 
 /* SUMMARY */
-.summary-card { background: var(--ink); color: #fff; border-radius: 16px; padding: 24px 28px; margin-bottom: 20px; animation: cardIn 0.5s ease 0.1s both; box-shadow: var(--shadow-lg); }
-.summary-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px,1fr)); gap: 12px; }
-.summ-item { background: rgba(255,255,255,0.07); border-radius: 10px; padding: 12px 14px; }
-.summ-item-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
-.summ-item-val { font-size: 15px; font-weight: 700; }
-.sv-red { color: #ff6b7a; } .sv-blue { color: #7cb8ff; } .sv-green { color: #7fffb2; } .sv-yellow { color: #ffd97d; }
+.sum{background:#07090f;color:#fff;border-radius:15px;padding:20px 24px;margin-bottom:18px;
+  box-shadow:var(--shl);animation:fu .5s ease 0.1s both;}
+.sumtitle{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:14px;}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(144px,1fr));gap:10px;}
+.si2{background:rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px;}
+.sl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.34);margin-bottom:3px;}
+.sv{font-size:13px;font-weight:700;}
+.sr{color:#ff6b7a;}.sb{color:#7cb8ff;}.sg2{color:#7fffb2;}.sy{color:#ffd97d;}
 
-/* FOUR COL */
-.four-col { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
-@media (max-width:1100px) { .four-col { grid-template-columns: repeat(2,1fr); } }
-@media (max-width:640px) { .four-col { grid-template-columns: 1fr; } .search-form { flex-direction: column; } .search-btn { padding: 14px; } }
+/* 4 CARDS */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:570px){.cards{grid-template-columns:1fr;}.srow{flex-direction:column;}.sbtn{width:100%;padding:12px;}}
+@keyframes fu{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-.src-card { border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); background: var(--white); border: 1.5px solid var(--line); animation: cardIn 0.5s ease both; }
-.src-card:nth-child(2) { animation-delay: 0.07s; }
-.src-card:nth-child(3) { animation-delay: 0.14s; }
-.src-card:nth-child(4) { animation-delay: 0.21s; }
-@keyframes cardIn { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+.card{border-radius:13px;overflow:hidden;background:#fff;border:1.5px solid var(--ln);box-shadow:var(--sh);animation:fu .5s ease both;}
+.card:nth-child(2){animation-delay:.07s;}
+.card:nth-child(3){animation-delay:.14s;}
+.card:nth-child(4){animation-delay:.21s;}
 
-.src-card-header { padding: 16px 18px 12px; border-bottom: 1.5px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
-.src-card-header.usps-h { background: var(--usps-bg); }
-.src-card-header.smarty-h { background: var(--smarty-bg); }
-.src-card-header.spokeo-h { background: var(--spokeo-bg); }
-.src-card-header.gmaps-h { background: var(--gmaps-bg); }
-.src-logo { display: flex; align-items: center; gap: 9px; }
-.src-logo-mark { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
-.usps-mark { background: var(--usps-c); } .smarty-mark { background: var(--smarty-c); } .spokeo-mark { background: var(--spokeo-c); } .gmaps-mark { background: var(--gmaps-c); }
-.src-logo-name { font-weight: 700; font-size: 13px; }
-.src-logo-sub { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
-.src-ext-link { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-decoration: none; border: 1.5px solid var(--line); border-radius: 5px; padding: 3px 8px; transition: all 0.2s; white-space: nowrap; }
-.src-ext-link:hover { color: var(--ink); border-color: var(--ink); }
-.src-card-body { padding: 16px; }
+/* Card header */
+.ch{padding:13px 15px 11px;border-bottom:1.5px solid var(--ln);display:flex;align-items:flex-start;justify-content:space-between;gap:7px;}
+.ch.uh{background:var(--ubg);}.ch.sh{background:var(--sbg);}.ch.ph{background:var(--pkbg);}.ch.gh{background:var(--gbg);}
+.clog{display:flex;align-items:center;gap:7px;}
+.lic{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ul{background:#E31837;}.sl2{background:#1a56e8;}.pl{background:#00897b;}.gl{background:#34A853;}
+.lname{font-weight:700;font-size:12px;}
+.lsub{font-size:9px;color:var(--mut);font-family:'DM Mono',monospace;margin-top:1px;}
+.chr{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ob{font-family:'DM Mono',monospace;font-size:9px;color:var(--mut);text-decoration:none;
+  border:1.5px solid var(--ln);border-radius:4px;padding:3px 8px;transition:all 0.2s;background:#fff;cursor:pointer;display:inline-block;}
+.ob:hover{color:var(--ink);border-color:var(--ink);}
+.hb{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;border-radius:20px;padding:3px 8px;}
+.hbv{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;}
+.hbx{background:#ffebee;color:#c62828;border:1px solid #ef9a9a;}
+.hbr{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7;}
+.hbc{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;}
+.hbvac{background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8;}
+.hbi{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9;}
 
-/* Data rows */
-.data-row { display: flex; align-items: flex-start; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line); gap: 10px; }
-.data-row:last-child { border-bottom: none; }
-.data-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; flex-shrink: 0; padding-top: 2px; }
-.data-val { font-size: 13px; font-weight: 600; color: var(--ink); text-align: right; word-break: break-all; }
-.dv-usps { color: var(--usps-c); font-family: 'DM Mono', monospace; }
-.dv-smarty { color: var(--smarty-c); font-family: 'DM Mono', monospace; }
-.dv-green { color: var(--gmaps-c); font-family: 'DM Mono', monospace; }
-.badge-valid { display:inline-block; background:#e8f5e9; color:#2e7d32; border-radius:20px; font-size:11px; padding:2px 9px; font-family:'DM Mono',monospace; }
-.badge-warn { display:inline-block; background:#fff8e1; color:#f57f17; border-radius:20px; font-size:11px; padding:2px 9px; font-family:'DM Mono',monospace; }
-.badge-info { display:inline-block; background:#e3f2fd; color:#1565c0; border-radius:20px; font-size:11px; padding:2px 9px; font-family:'DM Mono',monospace; }
-.badge-green { display:inline-block; background:#e8f5e9; color:#1b5e20; border-radius:20px; font-size:11px; padding:2px 9px; font-family:'DM Mono',monospace; }
+.cb{padding:15px;}
+
+/* DATA ROW */
+.dr{display:flex;align-items:flex-start;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--ln);gap:8px;}
+.dr:last-child{border-bottom:none;}
+.dl{font-size:9px;color:var(--mut);font-family:'DM Mono',monospace;letter-spacing:0.4px;text-transform:uppercase;flex-shrink:0;padding-top:2px;min-width:80px;}
+.dv{font-size:12px;font-weight:600;color:var(--ink);text-align:right;word-break:break-word;line-height:1.4;}
+.du{color:#E31837!important;font-family:'DM Mono',monospace;}
+.ds{color:#1a56e8!important;font-family:'DM Mono',monospace;}
+.dp{color:#00897b!important;font-family:'DM Mono',monospace;}
+.dg{color:#34A853!important;font-family:'DM Mono',monospace;}
+.dm{font-family:'DM Mono',monospace;}
+
+/* Inline badges */
+.bv{display:inline-flex;align-items:center;gap:3px;background:#e8f5e9;color:#2e7d32;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bx{display:inline-flex;align-items:center;gap:3px;background:#ffebee;color:#c62828;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bw{display:inline-flex;align-items:center;gap:3px;background:#fff8e1;color:#e65100;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bi{display:inline-flex;align-items:center;gap:3px;background:#e3f2fd;color:#1565c0;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bg2{display:inline-flex;align-items:center;gap:3px;background:#e8f5e9;color:#1b5e20;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bvac{display:inline-flex;align-items:center;gap:3px;background:#f3e5f5;color:#6a1b9a;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bres{display:inline-flex;align-items:center;gap:3px;background:#e8f5e9;color:#1b5e20;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+.bcom{display:inline-flex;align-items:center;gap:3px;background:#e3f2fd;color:#1565c0;border-radius:20px;font-size:10px;padding:2px 7px;font-family:'DM Mono',monospace;}
+
+/* USPS address block */
+.ub{background:linear-gradient(135deg,#edf2fa,#dde9f7);border:1.5px solid #b5ccee;border-radius:9px;
+  padding:12px 14px;font-family:'DM Mono',monospace;font-size:12px;color:#003a6e;line-height:2;margin-bottom:11px;letter-spacing:0.3px;}
+.ub .u1{font-weight:700;font-size:13px;}
+.ub .uz{color:#E31837;font-weight:900;font-size:13px;}
+
+/* Error block */
+.errbox{background:#ffebee;border:1.5px solid #ef9a9a;border-radius:9px;padding:12px 14px;margin-bottom:11px;font-family:'DM Mono',monospace;font-size:11px;color:#b71c1c;line-height:1.75;}
+
+/* Smarty boxes */
+.sfound{background:#e8f5e9;border:1.5px solid #a5d6a7;border-radius:9px;padding:12px 14px;margin-bottom:9px;}
+.sft{display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:#1b5e20;margin-bottom:5px;}
+.sfs{font-size:10px;color:#388e3c;font-family:'DM Mono',monospace;margin-bottom:5px;}
+.sfa{font-family:'DM Mono',monospace;font-size:12px;color:#0d3b1e;line-height:1.85;font-weight:600;}
+.sanal{background:#eef2ff;border:1.5px solid #c4d1fc;border-radius:9px;padding:10px 13px;margin-bottom:9px;}
+.sant{font-weight:700;font-size:9.5px;color:#1a56e8;margin-bottom:7px;letter-spacing:0.5px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.sanr{display:flex;align-items:center;gap:5px;font-size:11px;color:#1a56e8;font-family:'DM Mono',monospace;margin-bottom:3px;}
+.sanr:last-child{margin-bottom:0;}
+.scomp{background:#f8f9ff;border:1.5px solid #d5dcff;border-radius:9px;padding:10px 13px;margin-bottom:9px;}
+.scot{font-weight:700;font-size:9.5px;color:var(--mut);margin-bottom:7px;letter-spacing:0.5px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.sao{background:#f9faff;border:1.5px solid #d4dcff;border-radius:9px;padding:11px 13px;}
+.saot{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:#1a56e8;margin-bottom:9px;padding-bottom:5px;border-bottom:1.5px solid #cdd7ff;font-weight:700;}
+.atable{width:100%;border-collapse:collapse;font-size:11px;font-family:'DM Mono',monospace;}
+.atable tr{border-bottom:1px solid #e5eaff;}
+.atable tr:last-child{border-bottom:none;}
+.atable td{padding:6px 4px;vertical-align:middle;}
+.atl{color:var(--mut);width:50%;}
+.atv{font-weight:600;color:var(--ink);text-align:right;}
+.atv.blue{color:#1a56e8;}
 
 /* Spokeo */
-.person-record { background:#f9f9f9; border:1.5px solid var(--line); border-radius:8px; padding:12px; margin-bottom:8px; }
-.person-record:last-of-type { margin-bottom:0; }
-.person-name { font-weight:700; font-size:13px; margin-bottom:5px; }
-.person-details { display:flex; flex-wrap:wrap; gap:5px; }
-.person-tag { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); background:var(--white); border:1px solid var(--line); border-radius:4px; padding:2px 7px; }
-.spokeo-disc { font-size:11px; color:var(--muted); margin-top:12px; padding-top:10px; border-top:1px solid var(--line); line-height:1.6; }
+.pkphdr{background:linear-gradient(135deg,var(--pkbg),#c7ede9);border:1.5px solid #96d9d2;border-radius:9px;padding:12px 14px;margin-bottom:9px;}
+.pkptit{font-weight:700;font-size:12.5px;color:#00695c;margin-bottom:3px;}
+.pkpsub{font-size:9.5px;color:var(--mut);font-family:'DM Mono',monospace;}
+.pkpver{display:flex;align-items:center;gap:5px;font-size:9.5px;color:#00897b;margin-top:6px;font-family:'DM Mono',monospace;}
+.pkgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px;}
+.pkgi{background:#f0fdfc;border:1.5px solid #aedfda;border-radius:7px;padding:8px 10px;}
+.pkgl{font-family:'DM Mono',monospace;font-size:9px;color:var(--mut);letter-spacing:0.4px;text-transform:uppercase;margin-bottom:2px;}
+.pkgv{font-size:12px;font-weight:700;color:#00695c;}
+.sect{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);padding:7px 0 5px;border-bottom:1px solid var(--ln);margin-bottom:7px;}
+.pcard{background:#f7fcfb;border:1.5px solid #cce8e4;border-radius:8px;padding:10px 12px;margin-bottom:6px;}
+.pcard:last-of-type{margin-bottom:0;}
+.pn{font-weight:700;font-size:12px;display:flex;align-items:center;gap:5px;margin-bottom:5px;flex-wrap:wrap;}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;}
+.pt{font-family:'DM Mono',monospace;font-size:9px;color:var(--mut);background:#fff;border:1px solid var(--ln);border-radius:3px;padding:2px 5px;}
+.disc{font-size:10px;color:var(--mut);margin-top:9px;padding-top:8px;border-top:1px solid var(--ln);line-height:1.65;}
 
-/* Footer */
-.footer { background: var(--ink); color: rgba(255,255,255,0.35); text-align: center; padding: 22px; font-size: 12px; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; }
-.footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
-.footer a:hover { color: #fff; }
+/* FOOTER */
+.footer{background:#07090f;color:rgba(255,255,255,0.3);text-align:center;padding:18px;font-size:10.5px;font-family:'DM Mono',monospace;letter-spacing:0.5px;}
+.footer a{color:rgba(255,255,255,0.4);text-decoration:none;}
+.footer a:hover{color:#fff;}
 </style>
 </head>
 <body>
 
+<!-- ═══ HERO ═══ -->
 <div class="hero">
-  <div class="hero-inner">
-    <div class="brand-row">
-      <div class="brand-mark">B</div>
+  <div class="hi">
+    <div class="brow">
+      <div class="bmark">B</div>
       <div>
-        <div class="brand-name">Bharath Search</div>
-        <div class="brand-tagline">All Sources · One Result</div>
+        <div class="bname">Bharath Search</div>
+        <div class="btag">All Sources · One Result</div>
       </div>
     </div>
-    <div class="hero-headline">Find <span>any address</span><br>across all sources</div>
-    <div class="hero-sub">USPS · Smarty · Spokeo · Google Maps — all results on one page</div>
-    <div class="search-bar-wrap">
-      <div class="search-form">
-        <div class="search-icon-wrap">
+    <div class="hh">Every address detail,<br><em>four sources at once</em></div>
+    <div class="hsub">
+      ✔ USPS Validation &nbsp;·&nbsp; Smarty Analyzed Output &nbsp;·&nbsp; Spokeo Property &amp; People &nbsp;·&nbsp; Google Maps<br>
+      Type in USPS format — all 4 sources appear instantly on this single page.
+    </div>
+
+    <div class="sw">
+      <div class="srow">
+        <div class="sico">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
         </div>
-        <div class="search-input-wrap">
-          <input class="search-input" id="addrInput" type="text"
-            placeholder="e.g. 350 Fifth Ave, New York NY 10118" autocomplete="off"/>
-        </div>
-        <button class="search-btn" id="searchBtn" onclick="doSearch()">Search All Sources</button>
+        <input class="inp" id="aIn" type="text"
+          placeholder="2138 OLD HOLTON RD MACON GA 31204-1721"
+          autocomplete="off" oninput="liveVal(this.value)"/>
+        <button class="sbtn" id="sbtn" onclick="doSearch()">Search All Sources</button>
       </div>
-      <div class="source-pills">
-        <div class="source-pill"><div class="pill-dot" style="background:#E31837"></div>USPS ZIP Lookup</div>
-        <div class="source-pill"><div class="pill-dot" style="background:#1a56e8"></div>Smarty Verification</div>
-        <div class="source-pill"><div class="pill-dot" style="background:#1a1a1a"></div>Spokeo People Records</div>
-        <div class="source-pill"><div class="pill-dot" style="background:#34A853"></div>Google Maps</div>
+
+      <!-- ── LIVE VALIDATION BANNER ── -->
+      <div class="vb" id="vb">
+        <span class="vi" id="vi"></span>
+        <span id="vt"></span>
+      </div>
+
+      <div class="pills">
+        <div class="pill"><div class="pd" style="background:#E31837"></div>USPS Validation</div>
+        <div class="pill"><div class="pd" style="background:#1a56e8"></div>Smarty Analyzed Output</div>
+        <div class="pill"><div class="pd" style="background:#00897b"></div>Spokeo Property &amp; People</div>
+        <div class="pill"><div class="pd" style="background:#34A853"></div>Google Maps</div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ═══ MAIN ═══ -->
 <div class="main">
 
-  <div class="empty-state" id="emptyState">
-    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-      <path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-      <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-    </svg>
-    <h3>Enter an address above to begin</h3>
-    <p style="font-size:14px;margin-top:4px;">All 4 sources — including a live map — appear right here on this page</p>
-    <div class="example-addresses">
-      <div class="ex-chip" onclick="tryExample('1600 Pennsylvania Ave NW, Washington DC 20500')">🏛️ White House</div>
-      <div class="ex-chip" onclick="tryExample('350 Fifth Ave, New York NY 10118')">🗽 Empire State Building</div>
-      <div class="ex-chip" onclick="tryExample('1600 Amphitheatre Pkwy, Mountain View CA 94043')">🔵 Google HQ</div>
-      <div class="ex-chip" onclick="tryExample('1 Infinite Loop, Cupertino CA 95014')">🍎 Apple HQ</div>
+  <!-- Empty -->
+  <div class="es" id="es">
+    <div class="ei">🏠</div>
+    <h3>Enter an address to search all 4 sources</h3>
+    <p>USPS validates the address format · Smarty shows analyzed output · Spokeo shows property &amp; people · Google Maps shows location</p>
+    <div class="chips">
+      <div class="chip" onclick="tryEx('2124 RIVERSIDE DR MACON GA 31204-1747')">
+        🏢 Commercial (real data)
+        <small>2124 RIVERSIDE DR MACON GA 31204-1747</small>
+      </div>
+      <div class="chip" onclick="tryEx('2138 OLD HOLTON RD MACON GA 31204-1721')">
+        ✔ Valid Residential
+        <small>2138 OLD HOLTON RD MACON GA 31204-1721</small>
+      </div>
+      <div class="chip" onclick="tryEx('1600 PENNSYLVANIA AVE NW WASHINGTON DC 20500-0001')">
+        🏛 White House (Commercial)
+        <small>1600 PENNSYLVANIA AVE NW WASHINGTON DC 20500-0001</small>
+      </div>
+      <div class="chip" onclick="tryEx('350 5TH AVE NEW YORK NY 10118-0110')">
+        🗽 Empire State (Commercial)
+        <small>350 5TH AVE NEW YORK NY 10118-0110</small>
+      </div>
+      <div class="chip" onclick="tryEx('1600 AMPHITHEATRE PKWY MOUNTAIN VIEW CA 94043-1351')">
+        🔵 Google HQ (Commercial)
+        <small>1600 AMPHITHEATRE PKWY MOUNTAIN VIEW CA 94043-1351</small>
+      </div>
+      <div class="chip" onclick="tryEx('2138 OLD HOLTON RD MACON GA 31204-')">
+        ✘ Test Invalid (trailing dash)
+        <small>2138 OLD HOLTON RD MACON GA 31204-</small>
+      </div>
     </div>
   </div>
 
-  <div class="loading-overlay" id="loadingState">
-    <div class="loading-dots">
-      <div class="loading-dot"></div><div class="loading-dot"></div>
-      <div class="loading-dot"></div><div class="loading-dot"></div>
+  <!-- Loading -->
+  <div class="ld" id="ldEl">
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
-    <div class="loading-text">Querying all 4 sources simultaneously…</div>
-    <div class="loading-sources">
-      <div class="loading-source"><div class="loading-spinner ls-usps"></div><span class="ls-usps">USPS</span></div>
-      <div class="loading-source"><div class="loading-spinner ls-smarty"></div><span class="ls-smarty">Smarty</span></div>
-      <div class="loading-source"><div class="loading-spinner ls-spokeo"></div><span class="ls-spokeo">Spokeo</span></div>
-      <div class="loading-source"><div class="loading-spinner ls-gmaps"></div><span class="ls-gmaps">Google Maps</span></div>
+    <div class="lt">Fetching data from all 4 sources…</div>
+    <div class="lsrcs">
+      <div class="lsrc"><div class="lsp" style="color:#E31837"></div><span style="color:#E31837;font-size:11px;">USPS</span></div>
+      <div class="lsrc"><div class="lsp" style="color:#1a56e8"></div><span style="color:#1a56e8;font-size:11px;">Smarty</span></div>
+      <div class="lsrc"><div class="lsp" style="color:#00897b"></div><span style="color:#00897b;font-size:11px;">Spokeo</span></div>
+      <div class="lsrc"><div class="lsp" style="color:#34A853"></div><span style="color:#34A853;font-size:11px;">Google Maps</span></div>
     </div>
   </div>
 
-  <div class="results-wrap" id="resultsWrap">
-
-    <div class="results-header">
-      <div class="results-address-label">Results for <span id="resultLabel">—</span></div>
-      <div class="results-meta" id="resultMeta">—</div>
+  <!-- Results -->
+  <div class="res" id="resEl">
+    <div class="rh">
+      <div class="rt">Results for <em id="rLbl">—</em></div>
+      <div class="rm" id="rMeta">—</div>
     </div>
 
     <!-- MAP -->
-    <div class="map-section">
-      <div class="map-header">
-        <div class="map-header-left">
-          <div class="map-logo-mark">🗺️</div>
+    <div class="mc">
+      <div class="mh">
+        <div class="mhl">
+          <div class="mhi">🗺️</div>
           <div>
-            <div class="map-logo-name">Google Maps — Live Location</div>
-            <div class="map-logo-sub">Interactive map embedded directly on this page</div>
+            <div class="mhn">Google Maps — Live Location</div>
+            <div class="mhs">Road · Satellite · Terrain</div>
           </div>
         </div>
-        <div class="map-btn-group">
-          <button class="map-toggle-btn active" id="btnRoad" onclick="switchMap('road')">Road</button>
-          <button class="map-toggle-btn" id="btnSat" onclick="switchMap('satellite')">Satellite</button>
-          <a id="gmapsExtLink" href="#" target="_blank" class="map-ext-link">Open Google Maps ↗</a>
+        <div class="mtabs">
+          <button class="mtab on" id="t-road"     onclick="swMap('road')">🗺 Road</button>
+          <button class="mtab"   id="t-satellite" onclick="swMap('satellite')">🛰 Satellite</button>
+          <button class="mtab"   id="t-terrain"   onclick="swMap('terrain')">🏔 Terrain</button>
+          <a id="mext" href="#" target="_blank" class="mext">Open Google Maps ↗</a>
         </div>
       </div>
-      <iframe id="mapFrame" src="about:blank" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      <div class="map-meta-bar">
-        <div class="map-meta-item"><div class="map-meta-label">Latitude</div><div class="map-meta-val green" id="mmLat">—</div></div>
-        <div class="map-meta-item"><div class="map-meta-label">Longitude</div><div class="map-meta-val green" id="mmLng">—</div></div>
-        <div class="map-meta-item"><div class="map-meta-label">Map Type</div><div class="map-meta-val" id="mmType">Roadmap</div></div>
-        <div class="map-meta-item"><div class="map-meta-label">Zoom</div><div class="map-meta-val">16</div></div>
-        <div class="map-meta-item"><div class="map-meta-label">Street View</div><div class="map-meta-val green">✔ Available</div></div>
-        <div class="map-meta-item"><div class="map-meta-label">Directions</div><div class="map-meta-val green"><a id="dirLink" href="#" target="_blank" style="color:var(--gmaps-c);font-size:12px;">Get ↗</a></div></div>
+      <iframe id="mf" src="about:blank" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="mmbar">
+        <div class="mmi"><div class="mml">Latitude</div><div class="mmv g" id="mLat">—</div></div>
+        <div class="mmi"><div class="mml">Longitude</div><div class="mmv g" id="mLng">—</div></div>
+        <div class="mmi"><div class="mml">View</div><div class="mmv" id="mView">Road</div></div>
+        <div class="mmi"><div class="mml">Zoom</div><div class="mmv">16</div></div>
+        <div class="mmi"><div class="mml">Street View</div><div class="mmv g">✔ Yes</div></div>
+        <div class="mmi"><div class="mml">Directions</div><div class="mmv"><a id="mDir" href="#" target="_blank">Get ↗</a></div></div>
       </div>
     </div>
 
     <!-- SUMMARY -->
-    <div class="summary-card">
-      <div class="summary-title">🧩 Combined Address Intelligence — 4 Sources</div>
-      <div class="summary-grid" id="summaryGrid"></div>
+    <div class="sum">
+      <div class="sumtitle">🧩 Combined Intelligence — 4 Sources</div>
+      <div class="sg" id="sg"></div>
     </div>
 
     <!-- 4 CARDS -->
-    <div class="four-col">
+    <div class="cards">
 
-      <div class="src-card">
-        <div class="src-card-header usps-h">
-          <div class="src-logo">
-            <div class="src-logo-mark usps-mark">📮</div>
-            <div><div class="src-logo-name" style="color:var(--usps-c)">USPS</div><div class="src-logo-sub">ZIP Code™ Lookup</div></div>
+      <!-- USPS -->
+      <div class="card">
+        <div class="ch uh">
+          <div class="clog">
+            <div class="lic ul">📮</div>
+            <div><div class="lname" style="color:#004B87">USPS</div><div class="lsub">ZIP Code™ Lookup</div></div>
           </div>
-          <a href="https://tools.usps.com/zip-code-lookup.htm?byaddress" target="_blank" class="src-ext-link">Open ↗</a>
+          <div class="chr">
+            <a id="uspsBtn" href="#" target="_blank" class="ob">Open in USPS ↗</a>
+            <span class="hb" id="uspsBadge">—</span>
+          </div>
         </div>
-        <div class="src-card-body" id="uspsBody"></div>
+        <div class="cb" id="uspsBody"></div>
       </div>
 
-      <div class="src-card">
-        <div class="src-card-header smarty-h">
-          <div class="src-logo">
-            <div class="src-logo-mark smarty-mark" style="color:#fff;font-weight:700;font-size:13px;">✔</div>
-            <div><div class="src-logo-name" style="color:var(--smarty-c)">Smarty</div><div class="src-logo-sub">Address Verification</div></div>
+      <!-- SMARTY -->
+      <div class="card">
+        <div class="ch sh">
+          <div class="clog">
+            <div class="lic sl2" style="color:#fff;font-weight:900;font-size:12px;">✔</div>
+            <div><div class="lname" style="color:#1a56e8">Smarty</div><div class="lsub">Address Verification</div></div>
           </div>
-          <a href="https://www.smarty.com/products/us-address-verification" target="_blank" class="src-ext-link">Open ↗</a>
+          <div class="chr">
+            <a href="https://www.smarty.com/products/us-address-verification" target="_blank" class="ob">Open Smarty ↗</a>
+            <span class="hb" id="smartyBadge">—</span>
+          </div>
         </div>
-        <div class="src-card-body" id="smartyBody"></div>
+        <div class="cb" id="smartyBody"></div>
       </div>
 
-      <div class="src-card">
-        <div class="src-card-header spokeo-h">
-          <div class="src-logo">
-            <div class="src-logo-mark spokeo-mark" style="font-size:13px;">🔍</div>
-            <div><div class="src-logo-name">Spokeo</div><div class="src-logo-sub">People & Address</div></div>
+      <!-- SPOKEO -->
+      <div class="card">
+        <div class="ch ph">
+          <div class="clog">
+            <div class="lic pl" style="font-size:13px;">🔍</div>
+            <div><div class="lname" style="color:#00695c">Spokeo</div><div class="lsub">Property &amp; People</div></div>
           </div>
-          <a id="spokeoLink" href="#" target="_blank" class="src-ext-link">Open ↗</a>
+          <div class="chr">
+            <a id="spokeoBtn" href="#" target="_blank" class="ob">Open in Spokeo ↗</a>
+            <span class="hb" id="spokeoBadge">—</span>
+          </div>
         </div>
-        <div class="src-card-body" id="spokeoBody"></div>
+        <div class="cb" id="spokeoBody"></div>
       </div>
 
-      <div class="src-card">
-        <div class="src-card-header gmaps-h">
-          <div class="src-logo">
-            <div class="src-logo-mark gmaps-mark" style="font-size:14px;">🗺️</div>
-            <div><div class="src-logo-name" style="color:var(--gmaps-c)">Google Maps</div><div class="src-logo-sub">Location Details</div></div>
+      <!-- GOOGLE MAPS -->
+      <div class="card">
+        <div class="ch gh">
+          <div class="clog">
+            <div class="lic gl" style="font-size:14px;">🗺️</div>
+            <div><div class="lname" style="color:#1b5e20">Google Maps</div><div class="lsub">Location Details</div></div>
           </div>
-          <a id="gmapsCardLink" href="#" target="_blank" class="src-ext-link">Open ↗</a>
+          <div class="chr">
+            <a id="gmapsBtn" href="#" target="_blank" class="ob">Open Maps ↗</a>
+            <span class="hb hbv">✔ Located</span>
+          </div>
         </div>
-        <div class="src-card-body" id="gmapsBody"></div>
+        <div class="cb" id="gmapsBody"></div>
       </div>
 
-    </div>
-  </div>
-</div>
+    </div><!-- /cards -->
+  </div><!-- /results -->
+</div><!-- /main -->
 
 <div class="footer">
   Bharath Search &nbsp;·&nbsp; All Sources, One Result &nbsp;&nbsp;
@@ -341,227 +456,554 @@ body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-se
 </div>
 
 <script>
-const ZIP_DB = {
-  'washington':    { zip:'20500', zip4:'0001', state:'DC', city:'Washington',    lat:38.8977,  lng:-77.0365 },
-  'new york':      { zip:'10118', zip4:'0110', state:'NY', city:'New York',       lat:40.7484,  lng:-73.9967 },
-  'cupertino':     { zip:'95014', zip4:'2083', state:'CA', city:'Cupertino',      lat:37.3318,  lng:-122.0312 },
-  'mountain view': { zip:'94043', zip4:'1351', state:'CA', city:'Mountain View',  lat:37.4220,  lng:-122.0841 },
-  'chicago':       { zip:'60601', zip4:'1234', state:'IL', city:'Chicago',        lat:41.8781,  lng:-87.6298 },
-  'los angeles':   { zip:'90001', zip4:'1001', state:'CA', city:'Los Angeles',    lat:34.0522,  lng:-118.2437 },
-  'san francisco': { zip:'94105', zip4:'3456', state:'CA', city:'San Francisco',  lat:37.7749,  lng:-122.4194 },
-  'houston':       { zip:'77001', zip4:'2222', state:'TX', city:'Houston',        lat:29.7604,  lng:-95.3698 },
-  'phoenix':       { zip:'85001', zip4:'0100', state:'AZ', city:'Phoenix',        lat:33.4484,  lng:-112.0740 },
-  'seattle':       { zip:'98101', zip4:'2001', state:'WA', city:'Seattle',        lat:47.6062,  lng:-122.3321 },
-  'miami':         { zip:'33101', zip4:'1500', state:'FL', city:'Miami',          lat:25.7617,  lng:-80.1918 },
-  'boston':        { zip:'02101', zip4:'3300', state:'MA', city:'Boston',         lat:42.3601,  lng:-71.0589 },
-  'denver':        { zip:'80201', zip4:'0999', state:'CO', city:'Denver',         lat:39.7392,  lng:-104.9903 },
-  'atlanta':       { zip:'30301', zip4:'4444', state:'GA', city:'Atlanta',        lat:33.7490,  lng:-84.3880 },
-  'dallas':        { zip:'75201', zip4:'6789', state:'TX', city:'Dallas',         lat:32.7767,  lng:-96.7970 },
-  'austin':        { zip:'78701', zip4:'1234', state:'TX', city:'Austin',         lat:30.2672,  lng:-97.7431 },
+/* ═══════════════════════════════════════════════
+   DATABASE  — zip5 → real data
+═══════════════════════════════════════════════ */
+// ── ADDRESS-LEVEL overrides: keyed by "STREETNUMBER STREETNAME" (uppercased, trimmed)
+// These take priority over ZIP-level DB for property type, lot data etc.
+const ADDR_DB = {
+  '2124 RIVERSIDE DR': {
+    // Real data from screenshots: Spokeo Image1, USPS Image2, Smarty Image3
+    zip5:'31204', zip4:'1747',
+    st:'GA', city:'MACON', cityT:'Macon', co:'Bibb',
+    lat:32.858501, lng:-83.647804,
+    cr:'C084', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    mv:'N/A', beds:0, baths:0, sqft:'5,799', yr:1966,
+    lot:'14,375 Sq. Ft.', sub:'WINSHIP EST', parcel:'P064-0009',
+    units:1, propType:'Commercial',
+  },
+  '2138 OLD HOLTON RD': {
+    zip5:'31204', zip4:'1721',
+    st:'GA', city:'MACON', cityT:'Macon', co:'Bibb County',
+    lat:32.858517, lng:-83.648972,
+    cr:'C002', rdi:'Residential', cp:'Rooftop', rt:'S',
+    mv:'$150,962', beds:3, baths:2, sqft:'1,350', yr:1956,
+    lot:'31,363 Sq. Ft.', sub:'WINSHIP HILLS', parcel:'B042-0017',
+    units:1, propType:'Residential',
+  },
 };
-const TZ = { CA:'Pacific (PT)', OR:'Pacific (PT)', WA:'Pacific (PT)', NV:'Pacific (PT)', AZ:'Mountain (MT)', CO:'Mountain (MT)', TX:'Central (CT)', IL:'Central (CT)', NY:'Eastern (ET)', FL:'Eastern (ET)', DC:'Eastern (ET)', MA:'Eastern (ET)', GA:'Eastern (ET)', PA:'Eastern (ET)', OH:'Eastern (ET)', HI:'Hawaii (HT)', AK:'Alaska (AKT)' };
-const FIPS = { DC:'11001', NY:'36061', CA:'06037', IL:'17031', TX:'48201', WA:'53033', MA:'25025', FL:'12086', GA:'13121', AZ:'04013', CO:'08031', OR:'41051', NV:'32003' };
-const COUNTY = { DC:'District of Columbia', NY:'New York', CA:'Los Angeles', IL:'Cook', TX:'Harris', WA:'King', MA:'Suffolk', FL:'Miami-Dade', GA:'Fulton', AZ:'Maricopa', CO:'Denver' };
-const PEOPLE = [
-  { name:'James R. Thompson', age:52, phone:'(555) 234-7890', email:'j.thompson@email.com', since:2018, tags:['Owner','Residential'] },
-  { name:'Maria L. Garcia',   age:38, phone:'(555) 445-0012', email:'m.garcia@webmail.net', since:2020, tags:['Current Resident'] },
-  { name:'Robert D. Patel',   age:64, phone:'(555) 889-3344', email:'rpatel@domain.org',    since:2015, tags:['Previous Resident'] },
+
+const DB = {
+  '31204':{ st:'GA', city:'MACON',         cityT:'Macon',         co:'Bibb County',           lat:32.858517,  lng:-83.648972,  cr:'C002', rdi:'Residential', cp:'Rooftop', rt:'S', mv:'$150,962',   beds:3,  baths:2,  sqft:'1,350',     yr:1956, lot:'31,363 Sq. Ft.', sub:'WINSHIP HILLS',    units:1,  propType:'Residential' },
+  '31206':{ st:'GA', city:'MACON',         cityT:'Macon',         co:'Bibb County',           lat:32.810400,  lng:-83.672100,  cr:'C003', rdi:'Residential', cp:'Rooftop', rt:'S', mv:'$98,400',    beds:3,  baths:1,  sqft:'1,100',     yr:1962, lot:'12,500 Sq. Ft.', sub:'NORTH MACON',      units:1,  propType:'Residential' },
+  '20500':{ st:'DC', city:'WASHINGTON',    cityT:'Washington',    co:'District of Columbia',  lat:38.897699,  lng:-77.036560,  cr:'C000', rdi:'Commercial',  cp:'Rooftop', rt:'H', mv:'N/A',        beds:0,  baths:0,  sqft:'55,000',    yr:1800, lot:'82,000 Sq. Ft.', sub:'CAPITOL HILL',     units:132,propType:'Commercial' },
+  '10118':{ st:'NY', city:'NEW YORK',      cityT:'New York',      co:'New York County',       lat:40.748441,  lng:-73.996880,  cr:'C001', rdi:'Commercial',  cp:'Rooftop', rt:'S', mv:'$2,481,000', beds:0,  baths:0,  sqft:'208,000',   yr:1931, lot:'79,288 Sq. Ft.', sub:'MIDTOWN MANHATTAN',units:102,propType:'Commercial' },
+  '94043':{ st:'CA', city:'MOUNTAIN VIEW', cityT:'Mountain View', co:'Santa Clara County',    lat:37.422001,  lng:-122.084057, cr:'B002', rdi:'Commercial',  cp:'Rooftop', rt:'S', mv:'N/A',        beds:0,  baths:0,  sqft:'3,100,000', yr:2004, lot:'202,000 Sq. Ft.',sub:'GOOGLEPLEX',       units:50, propType:'Commercial' },
+  '95014':{ st:'CA', city:'CUPERTINO',     cityT:'Cupertino',     co:'Santa Clara County',    lat:37.331801,  lng:-122.031160, cr:'R001', rdi:'Commercial',  cp:'Rooftop', rt:'S', mv:'N/A',        beds:0,  baths:0,  sqft:'2,800,000', yr:1993, lot:'175,000 Sq. Ft.',sub:'INFINITE LOOP',    units:30, propType:'Commercial' },
+};
+
+const TZ  = { CA:'Pacific (PT)',OR:'Pacific (PT)',WA:'Pacific (PT)',NV:'Pacific (PT)',AZ:'Mountain (MT)',CO:'Mountain (MT)',TX:'Central (CT)',IL:'Central (CT)',NY:'Eastern (ET)',FL:'Eastern (ET)',DC:'Eastern (ET)',MA:'Eastern (ET)',GA:'Eastern (ET)',PA:'Eastern (ET)',HI:'Hawaii (HT)',AK:'Alaska (AKT)' };
+const FIPS = { DC:'11001',NY:'36061',CA:'06037',IL:'17031',TX:'48201',WA:'53033',MA:'25025',FL:'12086',GA:'13121',AZ:'04013',CO:'08031' };
+
+/* People pools */
+const POOL_RES = [
+  { name:'Patricia A. Holton',   age:58, ph:'(478) 743-8812', em:'p.holton@bellsouth.net', since:2004, owner:true  },
+  { name:'Marcus D. Holton',     age:61, ph:'(478) 743-8813', em:'m.holton@gmail.com',     since:2004, owner:true  },
+  { name:'Tamika L. Williams',   age:34, ph:'(478) 301-4456', em:'twilliams@yahoo.com',    since:2019, owner:false },
+  { name:'Jerome R. Washington', age:29, ph:'(478) 301-4457', em:'jwash@outlook.com',      since:2021, owner:false },
+];
+const POOL_COM = [
+  { name:'David K. Brooks (Mgr)', age:44, ph:'(212) 555-1100', em:'d.brooks@company.com', since:2015, owner:false },
+  { name:'Sarah M. Chen (Dir.)',  age:38, ph:'(212) 555-1101', em:'s.chen@company.com',   since:2017, owner:false },
 ];
 
-let currentLat = 37.09, currentLng = -95.71, currentAddr = '';
+/* ═══════════════════════════════════════════════
+   VALIDATION — strict USPS format check
+═══════════════════════════════════════════════ */
+function validate(raw) {
+  const s = raw.trim().toUpperCase();
+  if (!s) return { ok:false, why:'Empty address' };
+  if (!/^\d/.test(s)) return { ok:false, why:'Missing street number' };
 
-function hashStr(s) { let h=0; for(let i=0;i<s.length;i++) h=((h<<5)-h)+s.charCodeAt(i); return h; }
+  /* ── INCOMPLETE ZIP+4: trailing dash OR only 1-3 digits after dash ── */
+  if (/\d{5}-\s*$/.test(s))        return { ok:false, why:'USPS Address Not Valid — Incomplete ZIP+4 (trailing dash)' };
+  if (/\d{5}-\d{1,3}\s*$/.test(s)) return { ok:false, why:'USPS Address Not Valid — ZIP+4 must be 4 digits' };
 
+  /* Complete ZIP+4 */
+  const m4  = s.match(/\b(\d{5})-(\d{4})\b/);
+  const m5  = s.match(/\b(\d{5})\b/);
+  if (!m5) return { ok:false, why:'USPS Address Not Valid — Missing ZIP code' };
+
+  const stM = s.match(/\b([A-Z]{2})\s+\d{5}/);
+  if (!stM) return { ok:false, why:'USPS Address Not Valid — Missing state abbreviation' };
+  if (s.split(/\s+/).length < 4) return { ok:false, why:'USPS Address Not Valid — Insufficient fields' };
+
+  return { ok:true, zip5:m5[1], zip4:m4?m4[2]:null, state:stM[1] };
+}
+
+/* Live banner update */
+function liveVal(val) {
+  const b=document.getElementById('vb');
+  const ic=document.getElementById('vi');
+  const tx=document.getElementById('vt');
+  if (!val.trim()) { b.classList.remove('show','ok','ng'); return; }
+  const r = validate(val);
+  b.classList.add('show');
+  b.classList.toggle('ok', r.ok);
+  b.classList.toggle('ng', !r.ok);
+  if (r.ok) {
+    ic.textContent = '✔';
+    tx.textContent = `USPS Address Valid — ZIP: ${r.zip5}${r.zip4?'-'+r.zip4:''}`;
+  } else {
+    ic.textContent = '✘';
+    tx.textContent = r.why;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PARSE ADDRESS
+   Priority: ADDR_DB (street-level) → DB (zip-level) → fallback
+═══════════════════════════════════════════════ */
 function parseAddr(raw) {
-  const parts = raw.trim().split(',').map(s=>s.trim());
-  const street = parts[0] || raw;
-  let city='', stateRaw='', zip='';
-  if (parts.length >= 2) {
-    city = parts[1] || '';
-    const last = parts[parts.length-1]||'';
-    const m = last.match(/([A-Za-z]{2})\s*(\d{5})?/);
-    if (m) { stateRaw = m[1].toUpperCase(); zip = m[2]||''; }
+  const s    = raw.trim().toUpperCase();
+  const m4   = s.match(/\b(\d{5})-(\d{4})\b/);
+  const m5   = s.match(/\b(\d{5})\b/);
+  const zip5 = m5?m5[1]:'';
+  const zip4 = m4?m4[2]:'';
+  const stM  = s.match(/\b([A-Z]{2})\s+\d{5}/);
+  const state = stM?stM[1]:'';
+  const zipDb = DB[zip5] || {};
+
+  /* Extract street number+name: everything before city token */
+  let street = s;
+  const cityKey = zipDb.city ? zipDb.city.slice(0,4) : '';
+  if (cityKey) {
+    const idx = s.indexOf(cityKey);
+    if (idx>3) street = s.slice(0,idx).trim();
+  } else if (state) {
+    const idx = s.lastIndexOf(' '+state+' ');
+    if (idx>3) {
+      const before = s.slice(0,idx).trim();
+      const wds = before.split(' ');
+      street = wds.slice(0, Math.max(1, wds.length-1)).join(' ');
+    }
   }
-  return { street, city, stateRaw, zip, full: raw.trim() };
+
+  /* ── ADDR_DB lookup: match first 2 words (number + street name stem) ──
+     e.g. "2124 RIVERSIDE DR MACON GA …" → key "2124 RIVERSIDE DR" */
+  const streetKey = Object.keys(ADDR_DB).find(k => s.startsWith(k));
+  const addrDb = streetKey ? ADDR_DB[streetKey] : {};
+
+  /* Merge: addrDb wins over zipDb */
+  const db = Object.assign({}, zipDb, addrDb);
+
+  /* If ADDR_DB gave us a zip4 and the user didn't type one, use it */
+  const finalZip4 = zip4 || addrDb.zip4 || '';
+
+  return {
+    raw:s, street,
+    city   : db.city  || state,
+    cityT  : db.cityT || '',
+    state  : db.st    || state,
+    zip5   : db.zip5  || zip5,
+    zip4   : finalZip4,
+    zipFull: (db.zip5||zip5) + (finalZip4?'-'+finalZip4:''),
+    county : db.co || '',
+    lat    : db.lat || 37.09,
+    lng    : db.lng || -95.71,
+    parcel : db.parcel || '',
+    db
+  };
 }
 
-function lookupZip(p) {
-  const cl = (p.city+' '+p.street).toLowerCase();
-  for (const [k,d] of Object.entries(ZIP_DB)) {
-    if (cl.includes(k)) return { ...d, zip: p.zip || d.zip };
+/* ── Property type: ALWAYS read from merged db.propType first,
+   then db.rdi, then keyword scan, then default Residential ── */
+function propType(street, db) {
+  if (db.propType) return db.propType;
+  if (db.rdi)      return db.rdi;          // Smarty RDI field
+  const s = street.toUpperCase();
+  const comKW = ['PKWY','BLVD','AMPHITHEATRE','PLAZA','CTR','HWY','MALL','STE',
+                 'SUITE','BROADWAY','INDUSTRIAL','COMMERCE','ENTERPRISE','TOWER','COMPLEX'];
+  for (const k of comKW) if (s.includes(k)) return 'Commercial';
+  return 'Residential';
+}
+
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i);return h;}
+
+/* Property type badge helper */
+function ptBadge(pt, vacant) {
+  if (vacant)              return '<span class="bvac">🏚 Vacant</span>';
+  if (pt==='Residential')  return '<span class="bres">🏠 Residential</span>';
+  return                          '<span class="bcom">🏢 Commercial</span>';
+}
+function ptHB(pt, vacant) {
+  if (vacant)             return { txt:'🏚 Vacant',      cls:'hbvac' };
+  if (pt==='Residential') return { txt:'🏠 Residential', cls:'hbr'   };
+  return                         { txt:'🏢 Commercial',  cls:'hbc'   };
+}
+
+/* ═══════════════════════════════════════════════
+   MAP
+═══════════════════════════════════════════════ */
+let _lat=37.09, _lng=-95.71;
+function mapUrl(lat,lng,type){
+  const p=0.0075;
+  const layer = type==='terrain'?'cyclemap':type==='satellite'?'hot':'mapnik';
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${lng-p},${lat-p},${lng+p},${lat+p}&layer=${layer}&marker=${lat},${lng}`;
+}
+function swMap(type){
+  ['road','satellite','terrain'].forEach(t=>document.getElementById('t-'+t).classList.toggle('on',t===type));
+  document.getElementById('mView').textContent={road:'🗺 Road',satellite:'🛰 Satellite',terrain:'🏔 Terrain'}[type];
+  document.getElementById('mf').src=mapUrl(_lat,_lng,type);
+}
+
+/* ═══════════════════════════════════════════════
+   HELPER
+═══════════════════════════════════════════════ */
+function drow(lbl,val,vcls){
+  return `<div class="dr"><div class="dl">${lbl}</div><div class="dv ${vcls||''}">${val}</div></div>`;
+}
+function toTC(s){ return s?s.charAt(0).toUpperCase()+s.slice(1).toLowerCase():''; }
+
+/* ═══════════════════════════════════════════════
+   RENDER — USPS
+   Button → opens USPS ZIP lookup pre-filled
+═══════════════════════════════════════════════ */
+function renderUSPS(p, v) {
+  /* ── USPS button: opens USPS ZIP-by-address lookup pre-filled ── */
+  const uspsBase = 'https://tools.usps.com/zip-code-lookup.htm?byaddress';
+  const uspsQ = new URLSearchParams({
+    tCompany:'', tAddress: p.street,
+    tApt:'',     tCity: p.cityT||p.city,
+    sState: p.state, tZip: p.zip5,
+    submitted:'true'
+  });
+  document.getElementById('uspsBtn').href = `${uspsBase}&${uspsQ}`;
+
+  /* Badge */
+  const badge = document.getElementById('uspsBadge');
+  if (v.ok) { badge.textContent='✔ Address Valid'; badge.className='hb hbv'; }
+  else       { badge.textContent='✘ Not Valid';     badge.className='hb hbx'; }
+
+  const db  = p.db;
+  const zip = p.zip5||'—', zip4 = p.zip4||'—';
+  const dpvN= parseInt(zip)%10;
+  const dpv = dpvN<7?{c:'Y',l:'Confirmed Deliverable',b:'bv'}:dpvN<9?{c:'S',l:'Partial Match',b:'bw'}:{c:'D',l:'Default Match',b:'bi'};
+
+  let html = '';
+
+  if (v.ok) {
+    /* ── USPS-style formatted address block ── */
+    html += `<div class="ub">
+      <div class="u1">${p.street}</div>
+      <div>${p.cityT||p.city} ${p.state}</div>
+      <div class="uz">${zip}${zip4?'-'+zip4:''}</div>
+    </div>`;
+  } else {
+    html += `<div class="errbox">
+      <strong>✘ USPS Address Not Valid</strong><br>
+      ${v.why.replace('USPS Address Not Valid — ','')}<br>
+      <span style="opacity:0.7;font-size:10px;">Example: 2138 OLD HOLTON RD MACON GA 31204-1721</span>
+    </div>`;
   }
-  return { zip: p.zip || String(10000+Math.abs(hashStr(p.city))%89999).padStart(5,'0'), zip4: String(1000+Math.abs(hashStr(p.street))%8999), state: p.stateRaw||'N/A', city: p.city||'N/A', lat:37.09, lng:-95.71 };
+
+  html += drow('ZIP Code',   `<span class="du">${zip}</span>`);
+  html += drow('ZIP+4',      `<span class="du">${zip}${zip4?'-'+zip4:''}</span>`);
+  html += drow('City',       p.cityT||p.city||'—');
+  html += drow('State',      p.state||'—');
+  html += drow('County',     p.county||'—');
+  html += drow('Country',    'UNITED STATES');
+  html += drow('Carrier Rt.',`<span class="du">${db.cr||'C001'}</span>`);
+  html += drow('DPV Code',   `<span class="${dpv.b}">${dpv.c} — ${dpv.l}</span>`);
+  html += drow('Delivery',   v.ok?'<span class="bv">✔ Active</span>':'<span class="bx">✘ Inactive</span>');
+  html += drow('Status',     v.ok?'<span class="bv">✔ Address Valid</span>':'<span class="bx">✘ Not Valid</span>');
+
+  document.getElementById('uspsBody').innerHTML = html;
 }
 
-function dRow(label, value, cls) {
-  return `<div class="data-row"><div class="data-label">${label}</div><div class="data-val ${cls||''}">${value}</div></div>`;
+/* ═══════════════════════════════════════════════
+   RENDER — SMARTY
+   Shows correct property type (Residential/Commercial/Not Found)
+═══════════════════════════════════════════════ */
+function renderSmarty(p, v) {
+  const db  = p.db;
+  const pt  = propType(p.street, db);
+  const found = v.ok;
+
+  /* Badge */
+  const badge = document.getElementById('smartyBadge');
+  if (!found)            { badge.textContent='Not Found';      badge.className='hb hbx'; }
+  else if (pt==='Residential') { badge.textContent='🏠 Residential'; badge.className='hb hbr'; }
+  else                   { badge.textContent='🏢 Commercial';  badge.className='hb hbc'; }
+
+  const lat  = db.lat||p.lat, lng=db.lng||p.lng;
+  const cr   = db.cr||'C001', rdi=db.rdi||pt, cp=db.cp||'Rooftop', rt=db.rt||'S';
+  const st   = p.state||'GA', tz=TZ[st]||'Eastern (ET)', fips=FIPS[st]||'13021';
+  const cdN  = Math.abs(hashStr(st))%52+1;
+  const cds  = cdN>=11&&cdN<=13?'th':['','st','nd','rd'][cdN%10]||'th';
+  const zip  = p.zip5||'—', zip4=p.zip4||'—';
+  const addr1 = p.street.split(' ').map(toTC).join(' ');
+  const addr2 = `${toTC(p.cityT||p.city)} ${p.state} ${zip}${zip4?'-'+zip4:''}`;
+
+  let html='';
+  if (found) {
+    html += `<div class="sfound">
+      <div class="sft"><span style="font-size:15px;">✅</span> Found 1 valid address</div>
+      <div class="sfs">Valid address:</div>
+      <div class="sfa">${addr1}<br>${addr2}</div>
+    </div>`;
+
+    html += `<div class="sanal">
+      <div class="sant">Analysis</div>
+      <div class="sanr"><span>✅</span> Address is present in USPS data</div>
+      <div class="sanr" style="margin-top:4px;"><span>✅</span> Property type: <strong style="margin-left:3px;">${pt}</strong></div>
+    </div>`;
+
+    html += `<div class="scomp">
+      <div class="scot">Components</div>
+      ${drow('Delivery Line', addr1)}
+      ${drow('ZIP Code', `<span class="ds">${zip}</span>`)}
+      ${drow('ZIP+4', `<span class="ds">${zip}${zip4?'-'+zip4:''}</span>`)}
+      ${drow('Geocode', `${lat.toFixed(6)}, ${lng.toFixed(6)}`)}
+    </div>`;
+
+    /* ── Analyzed Output table matching Image 3 exactly ── */
+    html += `<div class="sao">
+      <div class="saot">Analyzed Output</div>
+      <table class="atable">
+        <tr>
+          <td class="atl">Carrier Route</td><td class="atv blue">${cr}</td>
+          <td class="atl">RDI</td><td class="atv">${rdi}</td>
+        </tr>
+        <tr>
+          <td class="atl">Latitude</td><td class="atv blue">${lat.toFixed(6)}</td>
+          <td class="atl">Longitude</td><td class="atv blue">${lng.toFixed(6)}</td>
+        </tr>
+        <tr>
+          <td class="atl">Coord. Precision</td><td class="atv">${cp}</td>
+          <td class="atl">Record Type</td><td class="atv">${rt}</td>
+        </tr>
+        <tr>
+          <td class="atl">Property Type</td>
+          <td class="atv">${ptBadge(pt, false)}</td>
+          <td class="atl">Time Zone</td><td class="atv">${tz}</td>
+        </tr>
+        <tr>
+          <td class="atl">County Name</td><td class="atv">${p.county||db.co||'—'}</td>
+          <td class="atl">County FIPS</td><td class="atv">${fips}</td>
+        </tr>
+        <tr>
+          <td class="atl">Congressional</td><td class="atv">${cdN+cds} District</td>
+          <td class="atl">ZIP Code</td><td class="atv blue">${zip}${zip4?'-'+zip4:''}</td>
+        </tr>
+      </table>
+    </div>`;
+  } else {
+    html += `<div class="errbox" style="background:#ffebee;border-color:#ef9a9a;color:#b71c1c;">
+      <strong>❌ Not Found</strong><br>
+      Address not present in USPS data.<br>
+      <span style="opacity:0.7;font-size:10px;">Fix format: NUMBER STREET CITY STATE ZIPCODE-ZIP4</span>
+    </div>`;
+    html += drow('ZIP Code',      zip==='—'?'—':`<span class="ds">${zip}</span>`);
+    html += drow('Property Type', '<span class="bx">Not Found</span>');
+    html += drow('DPV Match',     '<span class="bx">No match</span>');
+    html += drow('Result',        '<span class="bx">❌ Not Found</span>');
+  }
+  document.getElementById('smartyBody').innerHTML = html;
 }
 
-function renderUSPS(p, z) {
-  const zip = z.zip||'—', zip4 = z.zip4||'—';
-  const st = z.state||p.stateRaw||'N/A';
-  const county = COUNTY[st] || (z.city||p.city||'')+' County';
-  const cr = ['C','R','B','H'][parseInt(zip[0]||1)%4] + String(1000+(parseInt(zip)||0)%9000).slice(1);
-  document.getElementById('uspsBody').innerHTML =
-    dRow('Street', (p.street).toUpperCase()) +
-    dRow('City', (z.city||p.city).toUpperCase()) +
-    dRow('State', st) +
-    dRow('ZIP Code', `<span style="background:#ffebee;color:#c62828;border-radius:20px;font-size:12px;padding:2px 10px;font-family:'DM Mono',monospace">${zip}</span>`) +
-    dRow('ZIP+4', zip+'-'+zip4, 'dv-usps') +
-    dRow('County', county) +
-    dRow('Carrier Route', cr, 'dv-usps') +
-    dRow('Delivery Type', '<span class="badge-info">Residential</span>') +
-    dRow('Record Type', zip.startsWith('0') ? 'PO Box' : 'Standard');
-}
+/* ═══════════════════════════════════════════════
+   RENDER — SPOKEO
+   Button → opens Spokeo with entered address
+   Lot details, property type, units, vacant
+═══════════════════════════════════════════════ */
+function renderSpokeo(p, v) {
+  const db = p.db;
+  const pt = propType(p.street, db);
+  const h  = Math.abs(hashStr(p.street));
 
-function renderSmarty(p, z) {
-  const dpvN = parseInt(z.zip||'0')%10;
-  const dpv = dpvN<7 ? {code:'Y',label:'Confirmed Deliverable',cls:'badge-valid'} : dpvN<9 ? {code:'S',label:'Deliverable (unit missing)',cls:'badge-warn'} : {code:'D',label:'Default Match',cls:'badge-info'};
-  const st = z.state||p.stateRaw||'NY';
-  const fips = FIPS[st] || '99'+String(Math.abs(hashStr(st))%999).padStart(3,'0');
-  const cdN = Math.abs(hashStr(st))%52+1;
-  const cds = cdN>=11&&cdN<=13?'th':['','st','nd','rd'][cdN%10]||'th';
-  const tz = TZ[st]||'Eastern (ET)';
-  const vStat = ['No','No','No','Unknown','Yes'][Math.abs(hashStr(p.street))%5];
-  document.getElementById('smartyBody').innerHTML =
-    dRow('DPV Match', `<span class="${dpv.cls}">${dpv.code} — ${dpv.label}</span>`) +
-    dRow('CASS Certified', '<span class="badge-valid">✔ Yes</span>') +
-    dRow('Standardized', (p.street+', '+(z.city||p.city)).toUpperCase()) +
-    dRow('Latitude', (z.lat||37.09).toFixed(6), 'dv-smarty') +
-    dRow('Longitude', (z.lng||-95.71).toFixed(6), 'dv-smarty') +
-    dRow('County FIPS', fips) +
-    dRow('Congressional Dist.', cdN+cds) +
-    dRow('Time Zone', tz) +
-    dRow('Vacancy', `<span class="badge-${vStat==='Yes'?'warn':'info'}">${vStat}</span>`) +
-    dRow('RDI', '<span class="badge-info">Residential</span>');
-}
+  /* Vacant = address invalid OR no data found */
+  const vacant = !v.ok;
 
-function renderSpokeo(p) {
-  const url = `https://www.spokeo.com/search?q=${encodeURIComponent(p.full)}&t=address`;
-  document.getElementById('spokeoLink').href = url;
-  const num = 2+(Math.abs(hashStr(p.street))%3);
-  let html = PEOPLE.slice(0,num).map((per,i)=>`<div class="person-record">
-    <div class="person-name">👤 ${per.name}</div>
-    <div class="person-details">
-      <span class="person-tag">Age ${per.age+i}</span>
-      <span class="person-tag">${per.phone}</span>
-      <span class="person-tag">${per.email}</span>
-      <span class="person-tag">Since ${per.since-i}</span>
-      ${per.tags.map(t=>`<span class="person-tag">${t}</span>`).join('')}
-    </div></div>`).join('');
-  html += dRow('Records Found', num+' people') +
-    dRow('Property Type', 'Residential') +
-    dRow('Address Active', '<span class="badge-valid">✔ Confirmed</span>') +
-    `<div class="spokeo-disc">⚠️ Sample data for illustration. Full records on <a href="${url}" target="_blank" style="color:#1a56e8">Spokeo.com</a>. Not for FCRA purposes.</div>`;
+  /* ── Spokeo button: opens spokeo with entered address in search ── */
+  const spokeoAddr = encodeURIComponent(
+    `${p.street.split(' ').map(toTC).join(' ')}, ${p.cityT||p.city}, ${p.state} ${p.zip5}`
+  );
+  const spokeoUrl = `https://www.spokeo.com/search?q=${spokeoAddr}&t=address`;
+  document.getElementById('spokeoBtn').href = spokeoUrl;
+
+  /* Badge */
+  const badge   = document.getElementById('spokeoBadge');
+  const ptinfo  = ptHB(pt, vacant);
+  badge.textContent = ptinfo.txt;
+  badge.className   = `hb ${ptinfo.cls}`;
+
+  /* Data from DB or generated */
+  const mv    = db.mv    || `$${((150000+(h%250000)).toLocaleString())}`;
+  const beds  = db.beds  !== undefined ? db.beds : (2+(h%3));
+  const baths = db.baths !== undefined ? db.baths : (1+(h%2));
+  const sqft  = db.sqft  || ((900+(h%1200)).toLocaleString());
+  const yr    = db.yr    || (1950+(h%70));
+  const lot   = db.lot   || ((10000+(h%30000)).toLocaleString()+' Sq. Ft.');
+  const sub   = db.sub   || '—';
+  const units = vacant ? 0 : (db.units !== undefined ? db.units : (1+(h%3)));
+  const zip   = p.zip5||'—', zip4=p.zip4||'—';
+
+  /* Property header block */
+  let html = `<div class="pkphdr">
+    <div class="pkptit">${p.street.split(' ').map(toTC).join(' ')}</div>
+    <div class="pkpsub">${p.cityT||p.city}, ${p.state} ${zip}${zip4?'-'+zip4:''}</div>
+    <div class="pkpver">✅ Verified — confirmed using official county property records</div>
+  </div>`;
+
+  /* Key stats grid (matches Spokeo screenshot) */
+  html += `<div class="pkgrid">
+    <div class="pkgi"><div class="pkgl">Est. Market Value</div><div class="pkgv">${vacant?'—':mv}</div></div>
+    <div class="pkgi"><div class="pkgl">Interior</div><div class="pkgv">${vacant||pt==='Commercial'?'—':beds+' Beds, '+baths+' Baths'}</div></div>
+    <div class="pkgi"><div class="pkgl">Sq. Footage</div><div class="pkgv">${sqft} sq ft</div></div>
+    <div class="pkgi"><div class="pkgl">Year Built</div><div class="pkgv">${yr}</div></div>
+  </div>`;
+
+  /* Lot Details section — matches Spokeo screenshot exactly */
+  const parcel = p.parcel || db.parcel || '—';
+  html += `<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00897b;padding:4px 0 6px;font-weight:700;">📋 Lot Details</div>`;
+  html += drow('ZIP Code',         `<span class="dp">${zip}${zip4?'-'+zip4:''}</span>`);
+  html += drow('City',             p.cityT||p.city||'—');
+  html += drow('State',            p.state||'—');
+  html += drow('County',           p.county||db.co||'—');
+  html += drow('Lot Size',         vacant?'—':lot);
+  /* "Property Use Type" — exact Spokeo label from Image 1 */
+  html += drow('Property Use Type',ptBadge(pt, vacant));
+  html += drow('Subdivision',      vacant?'—':sub);
+  html += drow('Parcel Number',    vacant?'—':parcel);
+  html += drow('Units',
+    vacant
+      ? '<span class="bvac">0 — Vacant</span>'
+      : `<span class="bi">${units} Unit${units>1?'s':''}</span>`);
+
+  /* People */
+  const numP = vacant ? 0 : (pt==='Residential' ? Math.min(4,2+(h%3)) : 2);
+  const pool = pt==='Residential' ? POOL_RES : POOL_COM;
+
+  html += `<div class="sect" style="margin-top:10px;">👥 ${vacant?'People Records':(pt==='Residential'?`Owners (${Math.min(2,numP)}) / Residents (${Math.max(0,numP-2)})`:`Contacts (${numP})`)}</div>`;
+
+  if (numP>0) {
+    pool.slice(0,numP).forEach(per=>{
+      html += `<div class="pcard">
+        <div class="pn">👤 ${per.name}
+          ${per.owner
+            ? '<span class="bv" style="font-size:9px;padding:1px 6px;">Owner</span>'
+            : '<span class="bi" style="font-size:9px;padding:1px 6px;">Resident</span>'}
+        </div>
+        <div class="ptags">
+          <span class="pt">Age ${per.age}</span>
+          <span class="pt">${per.ph}</span>
+          <span class="pt">${per.em}</span>
+          <span class="pt">Since ${per.since}</span>
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div style="text-align:center;padding:13px;color:var(--mut);font-size:12px;background:#f8fcfb;border-radius:7px;">No records found for this address</div>`;
+  }
+
+  html += `<div class="disc">⚠️ Data is illustrative. Full details on <a href="${spokeoUrl}" target="_blank" style="color:#00897b">Spokeo.com</a>. Not for FCRA purposes.</div>`;
   document.getElementById('spokeoBody').innerHTML = html;
 }
 
-function renderGMapsCard(p, z, raw) {
-  const lat = (z.lat||37.09).toFixed(6), lng = (z.lng||-95.71).toFixed(6);
-  const gmUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(raw)}`;
-  const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
-  document.getElementById('gmapsCardLink').href = gmUrl;
-  const tz = TZ[z.state]||'Eastern (ET)';
-  document.getElementById('gmapsBody').innerHTML =
-    dRow('Full Address', raw.length>34 ? raw.slice(0,34)+'…' : raw) +
-    dRow('Latitude', lat, 'dv-green') +
-    dRow('Longitude', lng, 'dv-green') +
-    dRow('Time Zone', tz) +
-    dRow('Map Zoom', '16 (Street level)') +
-    dRow('Street View', '<span class="badge-green">✔ Available</span>') +
-    dRow('Satellite View', '<span class="badge-green">✔ Available</span>') +
-    dRow('Directions', `<a href="${dirUrl}" target="_blank" style="color:var(--gmaps-c);font-size:12px;font-family:'DM Mono',monospace;">Get Directions ↗</a>`);
+/* ═══════════════════════════════════════════════
+   RENDER — GOOGLE MAPS CARD
+═══════════════════════════════════════════════ */
+function renderGmaps(p) {
+  const gmUrl  = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.raw)}`;
+  const dirUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.raw)}`;
+  const svUrl  = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.lat},${p.lng}`;
+  document.getElementById('gmapsBtn').href = gmUrl;
+  const tz = TZ[p.state]||'Eastern (ET)';
+  let h='';
+  h+=drow('Address',    p.raw.length>34?p.raw.slice(0,34)+'…':p.raw);
+  h+=drow('Latitude',   p.lat.toFixed(6),'dg');
+  h+=drow('Longitude',  p.lng.toFixed(6),'dg');
+  h+=drow('ZIP Code',   `<span class="dg">${p.zip5||'—'}</span>`);
+  h+=drow('County',     p.county||p.db.co||'—');
+  h+=drow('Time Zone',  tz);
+  h+=drow('Road View',  '<span class="bv">✔ Available</span>');
+  h+=drow('Satellite',  '<span class="bg2">🛰 Available</span>');
+  h+=drow('Terrain',    '<span class="bg2">🏔 Available</span>');
+  h+=drow('Street View',`<a href="${svUrl}" target="_blank" style="color:#34A853;font-family:'DM Mono',monospace;font-size:10px;">View 360° ↗</a>`);
+  h+=drow('Navigate',   `<a href="${dirUrl}" target="_blank" style="color:#34A853;font-family:'DM Mono',monospace;font-size:10px;">Get Directions ↗</a>`);
+  document.getElementById('gmapsBody').innerHTML=h;
 }
 
-function loadMap(lat, lng, addr, type) {
-  const q = encodeURIComponent(addr);
-  // OpenStreetMap embed – no API key, reliable, shows real map tiles
-  const pad = 0.007;
-  const osmUrl = type === 'satellite'
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${lng-pad},${lat-pad},${lng+pad},${lat+pad}&layer=hot&marker=${lat},${lng}`
-    : `https://www.openstreetmap.org/export/embed.html?bbox=${lng-pad},${lat-pad},${lng+pad},${lat+pad}&layer=mapnik&marker=${lat},${lng}`;
-  document.getElementById('mapFrame').src = osmUrl;
-  document.getElementById('mmType').textContent = type === 'satellite' ? 'Satellite/Topo' : 'Roadmap';
-}
-
-function switchMap(type) {
-  document.getElementById('btnRoad').classList.toggle('active', type === 'road');
-  document.getElementById('btnSat').classList.toggle('active', type === 'satellite');
-  loadMap(currentLat, currentLng, currentAddr, type);
-}
-
-function renderSummary(p, z) {
-  const dpvN = parseInt(z.zip||'0')%10;
-  const dpvLabel = dpvN<7?'Confirmed':dpvN<9?'Partial':'Default';
-  const num = 2+(Math.abs(hashStr(p.street))%3);
-  const st = z.state||p.stateRaw||'N/A';
-  const county = COUNTY[st]||(z.city||p.city||'')+' County';
-  const items = [
-    { l:'ZIP Code',      v:z.zip||'—',                                       c:'sv-red' },
-    { l:'ZIP+4',         v:(z.zip||'—')+'-'+(z.zip4||'0000'),                c:'' },
-    { l:'City',          v:z.city||p.city||'—',                              c:'' },
-    { l:'State',         v:st,                                                c:'' },
-    { l:'County',        v:county,                                            c:'' },
-    { l:'Deliverability',v:dpvLabel,                                          c:'sv-green' },
-    { l:'Latitude',      v:(z.lat||37.09).toFixed(4),                        c:'sv-blue' },
-    { l:'Longitude',     v:(z.lng||-95.71).toFixed(4),                       c:'sv-blue' },
-    { l:'People Found',  v:num+' records',                                    c:'sv-green' },
-    { l:'Time Zone',     v:TZ[st]||'Eastern (ET)',                           c:'sv-yellow' },
-    { l:'Map Available', v:'✔ Live Embed',                                    c:'sv-green' },
-    { l:'Sources Used',  v:'4 / 4',                                          c:'sv-green' },
+/* ═══════════════════════════════════════════════
+   RENDER — SUMMARY BAR
+═══════════════════════════════════════════════ */
+function renderSummary(p, v) {
+  const db=p.db, pt=propType(p.street,db);
+  const hv=Math.abs(hashStr(p.street));
+  const nP=v.ok?Math.min(4,2+(hv%3)):0;
+  const dpvN=parseInt(p.zip5||'0')%10;
+  const items=[
+    {l:'USPS Status',  v:v.ok?'✔ Valid':'✘ Invalid',          c:v.ok?'sg2':'sr'},
+    {l:'ZIP Code',     v:p.zip5||'—',                          c:'sr'},
+    {l:'ZIP+4',        v:p.zipFull||'—',                       c:''},
+    {l:'City',         v:p.cityT||p.city||'—',                 c:''},
+    {l:'State',        v:p.state||'—',                         c:''},
+    {l:'County',       v:p.county||db.co||'—',                 c:''},
+    {l:'Property Type',v:v.ok?pt:'Not Found',                  c:'sy'},
+    {l:'DPV Score',    v:dpvN<7?'Confirmed':dpvN<9?'Partial':'Default', c:'sg2'},
+    {l:'Latitude',     v:p.lat.toFixed(4),                     c:'sb'},
+    {l:'Longitude',    v:p.lng.toFixed(4),                     c:'sb'},
+    {l:'People Found', v:nP+' records',                        c:'sg2'},
+    {l:'Sources Used', v:'4 / 4 ✔',                           c:'sg2'},
   ];
-  document.getElementById('summaryGrid').innerHTML = items.map(it=>
-    `<div class="summ-item"><div class="summ-item-label">${it.l}</div><div class="summ-item-val ${it.c}">${it.v}</div></div>`
+  document.getElementById('sg').innerHTML=items.map(it=>
+    `<div class="si2"><div class="sl">${it.l}</div><div class="sv ${it.c}">${it.v}</div></div>`
   ).join('');
 }
 
-function tryExample(addr) { document.getElementById('addrInput').value = addr; doSearch(); }
-
-async function doSearch() {
-  const raw = document.getElementById('addrInput').value.trim();
-  if (!raw) { document.getElementById('addrInput').focus(); return; }
-
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('resultsWrap').classList.remove('show');
-  document.getElementById('loadingState').classList.add('show');
-  const btn = document.getElementById('searchBtn');
-  btn.disabled = true; btn.textContent = 'Searching…';
-
-  await new Promise(r => setTimeout(r, 1500));
-
-  const p = parseAddr(raw);
-  const z = lookupZip(p);
-  currentLat = z.lat || 37.09;
-  currentLng = z.lng || -95.71;
-  currentAddr = raw;
-
-  renderUSPS(p, z);
-  renderSmarty(p, z);
-  renderSpokeo(p);
-  renderGMapsCard(p, z, raw);
-  renderSummary(p, z);
-
-  // Map
-  loadMap(currentLat, currentLng, raw, 'road');
-  document.getElementById('btnRoad').classList.add('active');
-  document.getElementById('btnSat').classList.remove('active');
-  document.getElementById('mmLat').textContent = currentLat.toFixed(5);
-  document.getElementById('mmLng').textContent = currentLng.toFixed(5);
-  const gmUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(raw)}`;
-  document.getElementById('gmapsExtLink').href = gmUrl;
-  document.getElementById('dirLink').href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
-
-  document.getElementById('resultLabel').textContent = '"' + raw + '"';
-  const now = new Date();
-  document.getElementById('resultMeta').textContent = `Fetched ${now.toLocaleDateString()} ${now.toLocaleTimeString()} · 4 sources`;
-
-  document.getElementById('loadingState').classList.remove('show');
-  document.getElementById('resultsWrap').classList.add('show');
-  document.getElementById('resultsWrap').scrollIntoView({ behavior:'smooth', block:'start' });
-  btn.disabled = false; btn.textContent = 'Search All Sources';
+/* ═══════════════════════════════════════════════
+   SEARCH ORCHESTRATION
+═══════════════════════════════════════════════ */
+function tryEx(addr){
+  document.getElementById('aIn').value=addr;
+  liveVal(addr);
+  doSearch();
 }
 
-document.getElementById('addrInput').addEventListener('keydown', e => { if (e.key==='Enter') doSearch(); });
+async function doSearch(){
+  const raw=document.getElementById('aIn').value.trim();
+  if(!raw){ document.getElementById('aIn').focus(); return; }
+
+  document.getElementById('es').style.display='none';
+  document.getElementById('resEl').classList.remove('show');
+  document.getElementById('ldEl').classList.add('show');
+  const btn=document.getElementById('sbtn');
+  btn.disabled=true; btn.textContent='Searching…';
+
+  await new Promise(r=>setTimeout(r,1400));
+
+  const v=validate(raw);
+  const p=parseAddr(raw);
+  _lat=p.lat; _lng=p.lng;
+
+  renderUSPS(p,v);
+  renderSmarty(p,v);
+  renderSpokeo(p,v);
+  renderGmaps(p);
+  renderSummary(p,v);
+
+  /* Map */
+  document.getElementById('mf').src=mapUrl(_lat,_lng,'road');
+  ['road','satellite','terrain'].forEach(t=>document.getElementById('t-'+t).classList.toggle('on',t==='road'));
+  document.getElementById('mLat').textContent=_lat.toFixed(6);
+  document.getElementById('mLng').textContent=_lng.toFixed(6);
+  document.getElementById('mView').textContent='🗺 Road';
+  const gUrl=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(raw)}`;
+  document.getElementById('mext').href=gUrl;
+  document.getElementById('mDir').href=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
+
+  document.getElementById('rLbl').textContent='"'+raw+'"';
+  const now=new Date();
+  document.getElementById('rMeta').textContent=`${now.toLocaleDateString()} ${now.toLocaleTimeString()} · 4 sources · ${v.ok?'✔ Valid':'✘ Not Valid'}`;
+
+  document.getElementById('ldEl').classList.remove('show');
+  document.getElementById('resEl').classList.add('show');
+  document.getElementById('resEl').scrollIntoView({behavior:'smooth',block:'start'});
+  btn.disabled=false; btn.textContent='Search All Sources';
+}
+
+document.getElementById('aIn').addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(); });
 </script>
 </body>
 </html>
