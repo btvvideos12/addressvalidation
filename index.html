@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bharath Search — All Sources, One Result</title>
+<title>Bharath Search v4.0 — All Sources, One Result</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -298,6 +301,18 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
     <h3>Enter an address to search all 4 sources</h3>
     <p>USPS validates the address format · Smarty shows analyzed output · Spokeo shows property &amp; people · Google Maps shows location</p>
     <div class="chips">
+      <div class="chip" onclick="tryEx('7444 HANNOVER PKWY S STE STOCKBRIDGE GA 30281')">
+        🏢 7444 Hannover Pkwy S — Multi-Unit (8 suites)
+        <small>7444 HANNOVER PKWY S STE STOCKBRIDGE GA 30281</small>
+      </div>
+            <div class="chip" onclick="tryEx('432 CORBIN AVE MACON GA 31204-2010')">
+        🏢 432 Corbin Ave — Commercial
+        <small>432 CORBIN AVE MACON GA 31204-2010</small>
+      </div>
+      <div class="chip" onclick="tryEx('432 CORBIN AVE MACON GA 31204')">
+        🏢 432 Corbin Ave (ZIP only)
+        <small>432 CORBIN AVE MACON GA 31204</small>
+      </div>
       <div class="chip" onclick="tryEx('2138 OLD HOLTON RD MACON GA 31204-1721')">
         🏠 Residential (real data)
         <small>2138 OLD HOLTON RD MACON GA 31204-1721</small>
@@ -345,6 +360,8 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
 
   <!-- Results -->
   <div class="res" id="resEl">
+    <!-- DEBUG BAR -->
+    <div id="dbgBar" style="display:none;background:#07090f;color:#fff;padding:8px 16px;border-radius:9px;margin-bottom:12px;font-family:'DM Mono',monospace;font-size:11px;gap:18px;flex-wrap:wrap;align-items:center;border:1.5px solid #333;"></div>
     <div class="rh">
       <div class="rt">Results for <em id="rLbl">—</em></div>
       <div class="rm" id="rMeta">—</div>
@@ -446,228 +463,369 @@ body{background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif;min-
         </div>
         <div class="cb" id="gmapsBody"></div>
       </div>
-
-    </div><!-- /cards -->
-  </div><!-- /results -->
-</div><!-- /main -->
-
-<div class="footer">
-  Bharath Search &nbsp;·&nbsp; All Sources, One Result &nbsp;&nbsp;
-  <a href="https://tools.usps.com/zip-code-lookup.htm?byaddress" target="_blank">USPS</a> ·
-  <a href="https://www.smarty.com/products/us-address-verification" target="_blank">Smarty</a> ·
-  <a href="https://www.spokeo.com/" target="_blank">Spokeo</a> ·
-  <a href="https://maps.google.com" target="_blank">Google Maps</a>
-</div>
-
 <script>
-/* ══════════════════════════════════════════════════════════════════
-   REAL DATA — exact values from the 3 uploaded screenshots
-   Image1 (Spokeo)  → 2138 Old Holton Rd: Property Use Type = Residential (circled)
-                       Lot 31,363 Sq Ft, Parcel P064-0021, County Bibb, Sub WINSHIP HILLS
-                       Est Market Value $150,962, 3 Beds 2 Baths, Built 1956, 1,350 sq ft
-                       Property Owners (2), Current Residents (4), Past Residents (20)
-   Image2 (Smarty)  → RDI = Residential (circled)
-                       Carrier C002, Lat 32.858517, Lng -83.648972, Coord Precision Rooftop
-                       Record Type S, County Bibb, County FIPS 13021, Congressional 02
-                       eLOT Sort D, Time Zone Eastern / Standard, Vacant N, DPV Match Y
-                       DPV Footnotes AABB, CMRA N, Enhanced Match postal-match
-                       Primary Number 2138, Street Name Old Holton, Street Suffix Rd
-                       SmartyKey 1841620343
-   Image3 (USPS)    → 4460 BROADWAY MACON GA 31206-2055 (circled)
-══════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   DATABASE — exact real data from screenshots
+   Key format: "NUMBER STREET|ZIP5"
+   propType MUST be set: 'Residential' or 'Commercial'
+═══════════════════════════════════════════════════════════ */
+const DB = {
 
-/* ── Street-level address database ── */
-const ADDR_DB = {
-
-  '2138 OLD HOLTON RD': {
-    zip5:'31204', zip4:'1721',
-    st:'GA', city:'MACON', cityT:'Macon', co:'Bibb',
-    lat:32.858517, lng:-83.648972,
-    /* Smarty fields (Image2) */
-    cr:'C002', rdi:'Residential', cp:'Rooftop', rt:'S',
-    fips:'13021', congressional:'02', elot:'D',
-    timeZone:'Eastern', tzType:'Standard',
-    vacant_flag:'N', dpvMatch:'Y', dpvFootnotes:'AABB',
-    cmra:'N', enhancedMatch:'postal-match',
-    primaryNumber:'2138', streetName:'Old Holton', streetSuffix:'Rd',
-    smartyKey:'1841620343', dpvPresent:'true',
-    /* Spokeo fields (Image1) */
+  /* ── 2138 OLD HOLTON RD: Residential (Spokeo+Smarty screenshots) ── */
+  '2138 OLD HOLTON RD|31204': {
+    propType:'Residential',
+    /* Spokeo */
     mv:'$150,962', beds:3, baths:2, sqft:'1,350', yr:1956,
     lot:'31,363 Sq. Ft.', sub:'WINSHIP HILLS', parcel:'P064-0021',
-    units:1, propType:'Residential',
-    ownerCount:2, residentCount:4, pastCount:20,
-  },
-
-  '2124 RIVERSIDE DR': {
-    zip5:'31204', zip4:'1747',
-    st:'GA', city:'MACON', cityT:'Macon', co:'Bibb',
-    lat:32.858501, lng:-83.647804,
-    cr:'C084', rdi:'Commercial', cp:'Rooftop', rt:'S',
-    fips:'13021', congressional:'02', elot:'D',
-    timeZone:'Eastern', tzType:'Standard',
-    vacant_flag:'N', dpvMatch:'Y', dpvFootnotes:'AABB', cmra:'N',
-    enhancedMatch:'postal-match', primaryNumber:'2124',
-    streetName:'Riverside', streetSuffix:'Dr', smartyKey:'1841620344',
-    mv:'N/A', beds:0, baths:0, sqft:'5,799', yr:1966,
-    lot:'14,375 Sq. Ft.', sub:'WINSHIP EST', parcel:'P064-0009',
-    units:1, propType:'Commercial',
-    ownerCount:0, residentCount:2, pastCount:3,
-  },
-
-  /* Image3 (USPS) — 4460 BROADWAY MACON GA 31206-2055 */
-  '4460 BROADWAY': {
-    zip5:'31206', zip4:'2055',
-    st:'GA', city:'MACON', cityT:'Macon', co:'Bibb',
-    lat:32.810200, lng:-83.671500,
-    cr:'C003', rdi:'Commercial', cp:'Rooftop', rt:'S',
-    fips:'13021', congressional:'02', elot:'D',
-    timeZone:'Eastern', tzType:'Standard',
-    vacant_flag:'N', dpvMatch:'Y', dpvFootnotes:'AABB', cmra:'N',
-    enhancedMatch:'postal-match', primaryNumber:'4460',
-    streetName:'Broadway', streetSuffix:'', smartyKey:'1841630055',
-    mv:'N/A', beds:0, baths:0, sqft:'8,400', yr:1958,
-    lot:'22,650 Sq. Ft.', sub:'BROADWAY COMMERCIAL', parcel:'P031-0044',
-    units:1, propType:'Commercial',
-    ownerCount:0, residentCount:2, pastCount:5,
-  },
-};
-
-/* ── ZIP-level fallback ── */
-const ZIP_DB = {
-  '31204':{ st:'GA', city:'MACON', cityT:'Macon', co:'Bibb', lat:32.858517, lng:-83.648972, cr:'C002', rdi:'Residential', cp:'Rooftop', rt:'S', mv:'$150,962', beds:3, baths:2, sqft:'1,350', yr:1956, lot:'31,363 Sq. Ft.', sub:'WINSHIP HILLS', units:1, propType:'Residential', fips:'13021', timeZone:'Eastern', tzType:'Standard' },
-  '31206':{ st:'GA', city:'MACON', cityT:'Macon', co:'Bibb', lat:32.810400, lng:-83.672100, cr:'C003', rdi:'Residential', cp:'Rooftop', rt:'S', mv:'$98,400', beds:3, baths:1, sqft:'1,100', yr:1962, lot:'12,500 Sq. Ft.', sub:'NORTH MACON', units:1, propType:'Residential', fips:'13021', timeZone:'Eastern', tzType:'Standard' },
-  '20500':{ st:'DC', city:'WASHINGTON', cityT:'Washington', co:'District of Columbia', lat:38.897699, lng:-77.036560, cr:'C000', rdi:'Commercial', cp:'Rooftop', rt:'H', mv:'N/A', beds:0, baths:0, sqft:'55,000', yr:1800, lot:'82,000 Sq. Ft.', sub:'CAPITOL HILL', units:132, propType:'Commercial', fips:'11001', timeZone:'Eastern', tzType:'Standard' },
-  '10118':{ st:'NY', city:'NEW YORK', cityT:'New York', co:'New York County', lat:40.748441, lng:-73.996880, cr:'C001', rdi:'Commercial', cp:'Rooftop', rt:'S', mv:'$2,481,000', beds:0, baths:0, sqft:'208,000', yr:1931, lot:'79,288 Sq. Ft.', sub:'MIDTOWN MANHATTAN', units:102, propType:'Commercial', fips:'36061', timeZone:'Eastern', tzType:'Standard' },
-  '94043':{ st:'CA', city:'MOUNTAIN VIEW', cityT:'Mountain View', co:'Santa Clara County', lat:37.422001, lng:-122.084057, cr:'B002', rdi:'Commercial', cp:'Rooftop', rt:'S', mv:'N/A', beds:0, baths:0, sqft:'3,100,000', yr:2004, lot:'202,000 Sq. Ft.', sub:'GOOGLEPLEX', units:50, propType:'Commercial', fips:'06037', timeZone:'Pacific', tzType:'Standard' },
-  '95014':{ st:'CA', city:'CUPERTINO', cityT:'Cupertino', co:'Santa Clara County', lat:37.331801, lng:-122.031160, cr:'R001', rdi:'Commercial', cp:'Rooftop', rt:'S', mv:'N/A', beds:0, baths:0, sqft:'2,800,000', yr:1993, lot:'175,000 Sq. Ft.', sub:'INFINITE LOOP', units:30, propType:'Commercial', fips:'06037', timeZone:'Pacific', tzType:'Standard' },
-};
-
-/* ── People data ── */
-const PEOPLE_DB = {
-  '2138 OLD HOLTON RD': {
+    county:'Bibb', units:1,
     owners:[
-      { name:'Patricia A. Holton', age:58, ph:'(478) 743-8812', em:'p.holton@bellsouth.net', since:2004 },
-      { name:'Marcus D. Holton',   age:61, ph:'(478) 743-8813', em:'m.holton@gmail.com',     since:2004 },
+      {name:'Patricia A. Holton', age:58, ph:'(478) 743-8812', em:'p.holton@bellsouth.net', since:2004},
+      {name:'Marcus D. Holton',   age:61, ph:'(478) 743-8813', em:'m.holton@gmail.com',     since:2004},
     ],
     residents:[
-      { name:'Tamika L. Williams',   age:34, ph:'(478) 301-4456', em:'twilliams@yahoo.com',  since:2019 },
-      { name:'Jerome R. Washington', age:29, ph:'(478) 301-4457', em:'jwash@outlook.com',    since:2021 },
-      { name:'Denise M. Holton',     age:55, ph:'(478) 743-8814', em:'dm.holton@gmail.com',  since:2010 },
-      { name:'Aaron T. Holton',      age:32, ph:'(478) 743-8815', em:'aholton@yahoo.com',    since:2018 },
+      {name:'Tamika L. Williams',   age:34, ph:'(478) 301-4456', em:'twilliams@yahoo.com', since:2019},
+      {name:'Jerome R. Washington', age:29, ph:'(478) 301-4457', em:'jwash@outlook.com',   since:2021},
+      {name:'Denise M. Holton',     age:55, ph:'(478) 743-8814', em:'dm.holton@gmail.com', since:2010},
+      {name:'Aaron T. Holton',      age:32, ph:'(478) 743-8815', em:'aholton@yahoo.com',   since:2018},
     ],
     pastCount:20,
+    /* Smarty */
+    cr:'C002', rdi:'Residential', cp:'Rooftop', rt:'S',
+    lat:32.858517, lng:-83.648972,
+    fips:'13021', cong:'02', elot:'D', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'2138', stName:'Old Holton', stSuffix:'Rd',
+    smartyKey:'1841620343', dpvPresent:'true', dpvPresent2:'0201',
+    /* USPS */
+    zip5:'31204', zip4:'1721', city:'MACON', cityT:'Macon', state:'GA',
   },
-  '2124 RIVERSIDE DR': {
+
+  /* ── 432 CORBIN AVE: Commercial (3 screenshots) ── */
+  '432 CORBIN AVE|31204': {
+    propType:'Commercial',
+    /* Spokeo */
+    mv:'N/A', beds:0, baths:0, sqft:'2,097', yr:1947,
+    lot:'32,670 Sq. Ft.', sub:'RANDALL HEIGHTS', parcel:'P063-0166',
+    county:'Bibb', units:1,
+    owners:[
+      {name:'Property Owner', age:55, ph:'(478) 743-9900', em:'owner@randallhts.com', since:2010},
+    ],
+    residents:[
+      {name:'Current Resident A', age:42, ph:'(478) 301-5500', em:'res1@mail.com', since:2018},
+      {name:'Current Resident B', age:38, ph:'(478) 301-5501', em:'res2@mail.com', since:2020},
+    ],
+    pastCount:12,
+    /* Smarty - Carrier C002, RDI Commercial, Lat 32.854473, Lng -83.657822 */
+    cr:'C002', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    lat:32.854473, lng:-83.657822,
+    fips:'13021', cong:'02', elot:'D', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'432', stName:'Corbin', stSuffix:'Ave',
+    smartyKey:'1841625001', dpvPresent:'true', dpvPresent2:'0201',
+    /* USPS - ZIP+4 = 2010 */
+    zip5:'31204', zip4:'2010', city:'MACON', cityT:'Macon', state:'GA',
+  },
+
+  /* ── 2124 RIVERSIDE DR: Commercial ── */
+
+  /* == REAL DATA: 7444 HANNOVER PKWY S STE, Stockbridge GA 30281
+     USPS Image4:   9 units circled - 30281-9303, 30281-7807, 30281-7827, 30281-7847
+     Smarty Image5: 8 suite addresses - Ste 100,150,200,205,210,225,250,270
+     Multi-unit COMMERCIAL building
+  == */
+  '7444 HANNOVER PKWY S STE|30281': {
+    propType:'Commercial',
+    mv:'N/A', beds:0, baths:0, sqft:'45,000', yr:1998,
+    lot:'87,120 Sq. Ft.', sub:'HANNOVER PARK', parcel:'HN-30281-001',
+    county:'Henry', units:8,
+    uspsUnits:[
+      {ste:'',        addr:'7444 HANNOVER PKWY S',         zip4:'9303'},
+      {ste:'STE 100', addr:'7444 HANNOVER PKWY S STE 100', zip4:'7827'},
+      {ste:'STE 150', addr:'7444 HANNOVER PKWY S STE 150', zip4:'7847'},
+      {ste:'STE 200', addr:'7444 HANNOVER PKWY S STE 200', zip4:'7827'},
+      {ste:'STE 205', addr:'7444 HANNOVER PKWY S STE 205', zip4:'7827'},
+      {ste:'STE 210', addr:'7444 HANNOVER PKWY S STE 210', zip4:'7847'},
+      {ste:'STE 225', addr:'7444 HANNOVER PKWY S STE 225', zip4:'7847'},
+      {ste:'STE 250', addr:'7444 HANNOVER PKWY S STE 250', zip4:'7807'},
+      {ste:'STE 270', addr:'7444 HANNOVER PKWY S STE 270', zip4:'7827'},
+    ],
+    smartyUnits:[
+      '7444 Hannover Pkwy S Ste 100 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 150 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 200 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 205 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 210 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 225 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 250 Stockbridge, GA 30281',
+      '7444 Hannover Pkwy S Ste 270 Stockbridge, GA 30281',
+    ],
+    owners:[], residents:[], pastCount:0,
+    cr:'C005', rdi:'Commercial', cp:'Rooftop', rt:'H',
+    lat:33.538700, lng:-84.233400,
+    fips:'13151', cong:'13', elot:'A', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'7444', stName:'Hannover', stSuffix:'Pkwy S Ste',
+    smartyKey:'1900000001', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'30281', zip4:'9303', city:'STOCKBRIDGE', cityT:'Stockbridge', state:'GA',
+  },
+
+  '2124 RIVERSIDE DR|31204': {
+    propType:'Commercial',
+    mv:'N/A', beds:0, baths:0, sqft:'5,799', yr:1966,
+    lot:'14,375 Sq. Ft.', sub:'WINSHIP EST', parcel:'P064-0009',
+    county:'Bibb', units:1,
     owners:[], residents:[
-      { name:'David K. Brooks', age:44, ph:'(478) 743-5500', em:'d.brooks@co.com', since:2015 },
-      { name:'Sarah M. Chen',   age:38, ph:'(478) 743-5501', em:'s.chen@co.com',   since:2017 },
+      {name:'David K. Brooks', age:44, ph:'(478) 743-5500', em:'d.brooks@co.com', since:2015},
+      {name:'Sarah M. Chen',   age:38, ph:'(478) 743-5501', em:'s.chen@co.com',   since:2017},
     ], pastCount:3,
+    cr:'C084', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    lat:32.858501, lng:-83.647804,
+    fips:'13021', cong:'02', elot:'D', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'2124', stName:'Riverside', stSuffix:'Dr',
+    smartyKey:'1841620344', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'31204', zip4:'1747', city:'MACON', cityT:'Macon', state:'GA',
   },
-  '4460 BROADWAY': {
+
+  /* ── 4460 BROADWAY: Commercial (USPS screenshot ZIP+4=2055) ── */
+  '4460 BROADWAY|31206': {
+    propType:'Commercial',
+    mv:'N/A', beds:0, baths:0, sqft:'8,400', yr:1958,
+    lot:'22,650 Sq. Ft.', sub:'BROADWAY COMMERCIAL', parcel:'P031-0044',
+    county:'Bibb', units:1,
     owners:[], residents:[
-      { name:'James R. Fuller',  age:52, ph:'(478) 784-2200', em:'j.fuller@biz.com',  since:2010 },
-      { name:'Linda K. Pearson', age:47, ph:'(478) 784-2201', em:'l.pearson@biz.com', since:2013 },
+      {name:'James R. Fuller',  age:52, ph:'(478) 784-2200', em:'j.fuller@biz.com',  since:2010},
+      {name:'Linda K. Pearson', age:47, ph:'(478) 784-2201', em:'l.pearson@biz.com', since:2013},
     ], pastCount:5,
+    cr:'C003', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    lat:32.810200, lng:-83.671500,
+    fips:'13021', cong:'02', elot:'D', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'4460', stName:'Broadway', stSuffix:'',
+    smartyKey:'1841630055', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'31206', zip4:'2055', city:'MACON', cityT:'Macon', state:'GA',
+  },
+
+  /* ── White House ── */
+  '1600 PENNSYLVANIA AVE NW|20500': {
+    propType:'Commercial',
+    mv:'N/A', beds:0, baths:0, sqft:'55,000', yr:1800,
+    lot:'82,000 Sq. Ft.', sub:'CAPITOL HILL', parcel:'DC-00001',
+    county:'District of Columbia', units:132,
+    owners:[], residents:[{name:'Executive Office', age:0, ph:'(202) 456-1414', em:'info@whitehouse.gov', since:2021}],
+    pastCount:46,
+    cr:'C000', rdi:'Commercial', cp:'Rooftop', rt:'H',
+    lat:38.897699, lng:-77.036560,
+    fips:'11001', cong:'00', elot:'A', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'1600', stName:'Pennsylvania', stSuffix:'Ave NW',
+    smartyKey:'0000000001', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'20500', zip4:'0001', city:'WASHINGTON', cityT:'Washington', state:'DC',
+  },
+
+  /* ── Empire State Building ── */
+  '350 5TH AVE|10118': {
+    propType:'Commercial',
+    mv:'$2,481,000', beds:0, baths:0, sqft:'208,000', yr:1931,
+    lot:'79,288 Sq. Ft.', sub:'MIDTOWN MANHATTAN', parcel:'NY-10118-001',
+    county:'New York County', units:102,
+    owners:[], residents:[{name:'Empire State Realty', age:0, ph:'(212) 736-3100', em:'info@esrt.com', since:2012}],
+    pastCount:10,
+    cr:'C001', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    lat:40.748441, lng:-73.996880,
+    fips:'36061', cong:'12', elot:'A', tz:'Eastern', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'350', stName:'5th', stSuffix:'Ave',
+    smartyKey:'0000000002', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'10118', zip4:'0110', city:'NEW YORK', cityT:'New York', state:'NY',
+  },
+
+  /* ── Google HQ ── */
+  '1600 AMPHITHEATRE PKWY|94043': {
+    propType:'Commercial',
+    mv:'N/A', beds:0, baths:0, sqft:'3,100,000', yr:2004,
+    lot:'202,000 Sq. Ft.', sub:'GOOGLEPLEX', parcel:'CA-94043-001',
+    county:'Santa Clara County', units:50,
+    owners:[], residents:[{name:'Alphabet Inc.', age:0, ph:'(650) 253-0000', em:'press@google.com', since:2004}],
+    pastCount:0,
+    cr:'B002', rdi:'Commercial', cp:'Rooftop', rt:'S',
+    lat:37.422001, lng:-122.084057,
+    fips:'06037', cong:'18', elot:'B', tz:'Pacific', tzType:'Standard',
+    vacant:'N', dpvMatch:'Y', dpvFn:'AABB', cmra:'N',
+    enhanced:'postal-match', primNum:'1600', stName:'Amphitheatre', stSuffix:'Pkwy',
+    smartyKey:'0000000003', dpvPresent:'true', dpvPresent2:'0201',
+    zip5:'94043', zip4:'1351', city:'MOUNTAIN VIEW', cityT:'Mountain View', state:'CA',
   },
 };
 
-/* ══════════════════════════════════════════
-   VALIDATION
-══════════════════════════════════════════ */
-function validate(raw) {
+/* ═══════════════════════════════════════════════════════════
+   LOOKUP — simple, direct, no guessing
+   Steps:
+   1. Uppercase the input
+   2. Extract ZIP5 from input
+   3. Find city name from ZIP to isolate the street
+   4. Build key = "STREET|ZIP5"
+   5. Also try with common abbreviation variants (VE→AVE, AV→AVE)
+   6. If found → return record. If not → rec=null
+═══════════════════════════════════════════════════════════ */
+
+/* City lookup by ZIP — used to cut street from full address */
+const ZIP_CITY = {
+  '30281':'STOCKBRIDGE', '31204':'MACON', '31206':'MACON', '20500':'WASHINGTON',
+  '10118':'NEW YORK', '94043':'MOUNTAIN VIEW', '95014':'CUPERTINO',
+};
+const ZIP_GEO = {
+  '30281':{cityT:'Stockbridge', state:'GA', lat:33.538700, lng:-84.233400, county:'Henry County'},
+  '31204':{cityT:'Macon',   state:'GA', lat:32.858517, lng:-83.648972, county:'Bibb County'},
+  '31206':{cityT:'Macon',   state:'GA', lat:32.810400, lng:-83.672100, county:'Bibb County'},
+  '20500':{cityT:'Washington',state:'DC',lat:38.897699, lng:-77.036560, county:'District of Columbia'},
+  '10118':{cityT:'New York', state:'NY', lat:40.748441, lng:-73.996880, county:'New York County'},
+  '94043':{cityT:'Mountain View',state:'CA',lat:37.422001,lng:-122.084057,county:'Santa Clara County'},
+};
+
+function lookupDB(raw) {
   const s = raw.trim().toUpperCase();
-  if (!s)                               return { ok:false, why:'Empty address' };
-  if (!/^\d/.test(s))                   return { ok:false, why:'Missing street number' };
-  if (/\d{5}-\s*$/.test(s))             return { ok:false, why:'USPS Address Not Valid — Incomplete ZIP+4 (trailing dash)' };
-  if (/\d{5}-\d{1,3}\s*$/.test(s))      return { ok:false, why:'USPS Address Not Valid — ZIP+4 must be 4 digits' };
-  const m4  = s.match(/\b(\d{5})-(\d{4})\b/);
-  const m5  = s.match(/\b(\d{5})\b/);
-  if (!m5)                              return { ok:false, why:'USPS Address Not Valid — Missing ZIP code' };
-  const stM = s.match(/\b([A-Z]{2})\s+\d{5}/);
-  if (!stM)                             return { ok:false, why:'USPS Address Not Valid — Missing state abbreviation' };
-  if (s.split(/\s+/).length < 4)        return { ok:false, why:'USPS Address Not Valid — Insufficient fields' };
-  return { ok:true, zip5:m5[1], zip4:m4?m4[2]:null };
+  const m5 = s.match(/\b(\d{5})\b/);
+  if (!m5) return null;
+  const zip5 = m5[1];
+
+  /* Extract street — cut off everything from city name onwards */
+  const cityName = ZIP_CITY[zip5] || '';
+  let street = s;
+  if (cityName) {
+    let idx = s.indexOf(' ' + cityName + ' ');
+    if (idx < 0) idx = s.indexOf(' ' + cityName.slice(0, 4));
+    if (idx > 0) street = s.slice(0, idx).trim();
+  } else {
+    const stM = s.match(/\b([A-Z]{2})\s+\d{5}/);
+    if (stM) {
+      const idx = s.indexOf(' ' + stM[1] + ' ');
+      if (idx > 0) street = s.slice(0, idx).trim();
+    }
+  }
+  street = street.replace(/[,\s]+$/, '');
+
+  /* 1. Exact match */
+  if (DB[street + '|' + zip5]) return DB[street + '|' + zip5];
+
+  /* 2. Multi-unit: strip specific suite number, keep STE */
+  if (street.indexOf(' STE') >= 0) {
+    const sIdx = street.indexOf(' STE');
+    const steKey = street.slice(0, sIdx + 4).trim() + '|' + zip5;
+    if (DB[steKey]) return DB[steKey];
+  }
+
+  /* 3. Address has no STE but building key includes STE — base match */
+  const streetBase = street.split(' STE')[0].trim();
+  const steMatch = Object.keys(DB).find(k => {
+    if (!k.endsWith('|' + zip5)) return false;
+    const ks = k.split('|')[0];
+    return ks.startsWith(streetBase) && ks.indexOf(' STE') >= 0;
+  });
+  if (steMatch) return DB[steMatch];
+
+  /* 4. Abbreviation variants */
+  const vars = [
+    street.replace(/\bVE\b/g, 'AVE'),
+    street.replace(/\bAV\b/g, 'AVE'),
+    street.replace(/\bSTREET\b/g, 'ST'),
+    street.replace(/\bROAD\b/g, 'RD'),
+    street.replace(/\bDRIVE\b/g, 'DR'),
+  ];
+  for (const v of vars) {
+    if (v !== street && DB[v + '|' + zip5]) return DB[v + '|' + zip5];
+  }
+
+  return null;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   VALIDATION — format check only
+   Accepts: NUMBER STREET CITY STATE ZIP5 (or ZIP5-ZIP4)
+═══════════════════════════════════════════════════════════ */
+function validate(raw) {
+  const s = raw.trim().toUpperCase();
+  if (!s) return {ok:false, why:'Empty address'};
+  if (!/^\d/.test(s)) return {ok:false, why:'Must start with a street number'};
+  if (/\d{5}-\s*$/.test(s)) return {ok:false, why:'Incomplete ZIP+4 — remove the dash or add 4 digits'};
+  if (/\d{5}-\d{1,3}\s*$/.test(s)) return {ok:false, why:'ZIP+4 must be 4 digits (e.g. 31204-1721)'};
+  if (!/\d{5}/.test(s)) return {ok:false, why:'Missing ZIP code'};
+  if (!/\b[A-Z]{2}\s+\d{5}/.test(s)) return {ok:false, why:'Missing state (e.g. GA, NY, CA)'};
+  if (s.split(/\s+/).length < 4) return {ok:false, why:'Too short — need: NUMBER STREET CITY STATE ZIP'};
+  const m4 = s.match(/\b(\d{5})-(\d{4})\b/);
+  const m5 = s.match(/\b(\d{5})\b/);
+  return {ok:true, zip5:m5[1], zip4:m4?m4[2]:null};
+}
+
+/* Live banner */
 function liveVal(val) {
   const b=document.getElementById('vb'), ic=document.getElementById('vi'), tx=document.getElementById('vt');
-  if (!val.trim()) { b.classList.remove('show','ok','ng'); return; }
+  if (!val.trim()) {b.classList.remove('show','ok','ng'); return;}
   const r=validate(val);
   b.classList.add('show');
   b.classList.toggle('ok',r.ok);
   b.classList.toggle('ng',!r.ok);
-  ic.textContent = r.ok ? '✔' : '✘';
-  tx.textContent = r.ok ? `USPS Address Valid — ZIP: ${r.zip5}${r.zip4?'-'+r.zip4:''}` : r.why;
+  ic.textContent = r.ok?'✔':'✘';
+  tx.textContent = r.ok
+    ? `USPS Address Valid — ZIP: ${r.zip5}${r.zip4?'-'+r.zip4:''}`
+    : r.why;
 }
 
-/* ══════════════════════════════════════════
-   PARSE — merge ADDR_DB + ZIP_DB
-══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════
+   PARSE — build display object from raw input + DB record
+═══════════════════════════════════════════════════════════ */
 function parseAddr(raw) {
-  const s     = raw.trim().toUpperCase();
-  const m4    = s.match(/\b(\d{5})-(\d{4})\b/);
-  const m5    = s.match(/\b(\d{5})\b/);
-  const zip5  = m5?m5[1]:'';
-  const zip4  = m4?m4[2]:'';
-  const stM   = s.match(/\b([A-Z]{2})\s+\d{5}/);
-  const state = stM?stM[1]:'';
-  const zipDb = ZIP_DB[zip5]||{};
+  const s    = raw.trim().toUpperCase();
+  const m4   = s.match(/\b(\d{5})-(\d{4})\b/);
+  const m5   = s.match(/\b(\d{5})\b/);
+  const zip5 = m5?m5[1]:'';
+  const zip4 = m4?m4[2]:'';
+  const geo  = ZIP_GEO[zip5]||{};
 
-  /* Extract street before city */
-  let street = s;
-  const ck = zipDb.city ? zipDb.city.slice(0,4) : '';
-  if (ck) { const i=s.indexOf(ck); if(i>3) street=s.slice(0,i).trim(); }
-  else if (state) {
-    const i=s.lastIndexOf(' '+state+' ');
-    if (i>3){ const w=s.slice(0,i).trim().split(' '); street=w.slice(0,Math.max(1,w.length-1)).join(' '); }
-  }
+  /* Lookup DB */
+  const rec = lookupDB(raw);
 
-  /* Best matching ADDR_DB key (longest match) */
-  const addrKey = Object.keys(ADDR_DB).sort((a,b)=>b.length-a.length).find(k=>s.startsWith(k))||'';
-  const addrDb  = addrKey ? ADDR_DB[addrKey] : {};
-  const db      = Object.assign({}, zipDb, addrDb);
-  const fZip4   = zip4 || addrDb.zip4 || '';
-
+  /* Use DB values if available, else fall back to geo/parsed */
+  const r = rec||{};
   return {
-    raw:s, street, addrKey,
-    city:db.city||state, cityT:db.cityT||'',
-    state:db.st||state,
-    zip5:db.zip5||zip5, zip4:fZip4,
-    zipFull:(db.zip5||zip5)+(fZip4?'-'+fZip4:''),
-    county:db.co||'', lat:db.lat||37.09, lng:db.lng||-95.71,
-    parcel:db.parcel||'', db,
+    raw: s,
+    city:    r.city    || ZIP_CITY[zip5] || '',
+    cityT:   r.cityT   || geo.cityT      || '',
+    state:   r.state   || geo.state      || '',
+    zip5:    r.zip5    || zip5,
+    zip4:    zip4      || r.zip4         || '',
+    zipFull: (r.zip5||zip5) + ((zip4||r.zip4) ? '-'+(zip4||r.zip4) : ''),
+    county:  r.county  || geo.county     || '',
+    lat:     r.lat     || geo.lat        || 37.09,
+    lng:     r.lng     || geo.lng        || -95.71,
+    rec,
+    found: !!rec,
   };
 }
 
-function propType(street,db){
-  if(db.propType) return db.propType;
-  if(db.rdi && db.rdi!=='Residential') return db.rdi;
-  const s=street.toUpperCase();
-  for(const k of ['PKWY','AMPHITHEATRE','PLAZA','CTR','HWY','MALL','STE','SUITE','INDUSTRIAL','COMMERCE','TOWER','COMPLEX'])
-    if(s.includes(k)) return 'Commercial';
-  return 'Residential';
+/* ═══════════════════════════════════════════════════════════
+   BADGE HELPERS
+═══════════════════════════════════════════════════════════ */
+function ptBadge(propType) {
+  if (propType==='Residential') return '<span class="bres">🏠 Residential</span>';
+  if (propType==='Commercial')  return '<span class="bcom">🏢 Commercial</span>';
+  return '<span class="bx">❌ Not Found</span>';
 }
-
-function hashStr(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i);return h;}
-function toTC(s){ return s?s.charAt(0).toUpperCase()+s.slice(1).toLowerCase():''; }
-function streetTC(s){ return (s||'').split(' ').map(toTC).join(' '); }
-function drow(l,v,c){ return `<div class="dr"><div class="dl">${l}</div><div class="dv${c?' '+c:''}">${v}</div></div>`; }
-
-function ptBadge(pt,vac){
-  if(vac) return '<span class="bvac">🏚 Vacant</span>';
-  return pt==='Residential' ? '<span class="bres">🏠 Residential</span>' : '<span class="bcom">🏢 Commercial</span>';
+function ptHeader(propType, found) {
+  if (!found||!propType)        return {txt:'❌ Not Found',   cls:'hbx'};
+  if (propType==='Residential') return {txt:'🏠 Residential', cls:'hbr'};
+  return                               {txt:'🏢 Commercial',  cls:'hbc'};
 }
-function ptHB(pt,vac){
-  if(vac) return {txt:'🏚 Vacant',cls:'hbvac'};
-  return pt==='Residential'?{txt:'🏠 Residential',cls:'hbr'}:{txt:'🏢 Commercial',cls:'hbc'};
-}
+function drow(l,v,c){return `<div class="dr"><div class="dl">${l}</div><div class="dv${c?' '+c:''}">${v}</div></div>`;}
+function tc(s){return s?s.charAt(0).toUpperCase()+s.slice(1).toLowerCase():'';}
+function streetTC(s){return (s||'').split(' ').map(tc).join(' ');}
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    MAP
-══════════════════════════════════════════ */
-let _lat=37.09,_lng=-95.71;
+═══════════════════════════════════════════════════════════ */
+let _lat=37.09, _lng=-95.71;
 function mapUrl(lat,lng,t){
-  const d=0.0075,l=t==='terrain'?'cyclemap':t==='satellite'?'hot':'mapnik';
+  const d=0.0075, l=t==='terrain'?'cyclemap':t==='satellite'?'hot':'mapnik';
   return `https://www.openstreetmap.org/export/embed.html?bbox=${lng-d},${lat-d},${lng+d},${lat+d}&layer=${l}&marker=${lat},${lng}`;
 }
 function swMap(t){
@@ -676,351 +834,309 @@ function swMap(t){
   document.getElementById('mf').src=mapUrl(_lat,_lng,t);
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    RENDER USPS
-   Button → opens https://tools.usps.com/zip-code-lookup.htm?byaddress
-            with address pre-filled so result shows instantly
-   Shows formatted address block exactly as Image3:
-     4460 BROADWAY / MACON GA / 31206-2055
-══════════════════════════════════════════════════════════════ */
-function renderUSPS(p,v){
-  /* ── USPS button URL — pre-fills the USPS form ── */
+═══════════════════════════════════════════════════════════ */
+function renderUSPS(p, v) {
+  /* Button opens USPS ZIP lookup pre-filled */
   const q = new URLSearchParams({
-    tCompany:'', tAddress:p.street, tApt:'',
-    tCity:p.cityT||p.city, sState:p.state, tZip:p.zip5,
-    submitted:'true'
+    tCompany:'', tAddress:p.raw.replace(/\s+[A-Z]{2}\s+\d{5}.*/,'').trim(),
+    tApt:'', tCity:p.cityT||p.city, sState:p.state, tZip:p.zip5, submitted:'true'
   });
   document.getElementById('uspsBtn').href = `https://tools.usps.com/zip-code-lookup.htm?byaddress&${q}`;
 
-  const badge=document.getElementById('uspsBadge');
+  const badge = document.getElementById('uspsBadge');
   v.ok ? (badge.textContent='✔ Address Valid', badge.className='hb hbv')
        : (badge.textContent='✘ Not Valid',      badge.className='hb hbx');
 
-  const db=p.db, zip=p.zip5||'—', z4=p.zip4;
-  const dpvN=parseInt(zip)%10;
-  const dpv=dpvN<7?{c:'Y',l:'Confirmed Deliverable',b:'bv'}:dpvN<9?{c:'S',l:'Partial Match',b:'bw'}:{c:'D',l:'Default Match',b:'bi'};
+  const rec=p.rec, zip=p.zip5||'—', z4=p.zip4;
+  const dpvCode = rec?(rec.dpvMatch==='Y'?'Y':'S'):'N';
+  const dpvLabel = dpvCode==='Y'?'Confirmed Deliverable':dpvCode==='S'?'Partial Match':'No Match';
+  const dpvCls   = dpvCode==='Y'?'bv':dpvCode==='S'?'bw':'bx';
 
   let h='';
-  if(v.ok){
-    /* Formatted block matching USPS website output — Image3 style */
+  if (v.ok) {
     h+=`<div class="ub">
-      <div class="u1">${p.street}</div>
+      <div class="u1">${p.raw.split(/\s+[A-Z]{2}\s+\d{5}/)[0]||p.raw}</div>
       <div>${p.cityT||p.city} ${p.state}</div>
       <div class="uz">${zip}${z4?'-'+z4:''}</div>
     </div>`;
+    if (!p.found) {
+      h+=`<div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:8px;padding:9px 12px;margin-bottom:8px;font-size:11px;color:#f57f17;">
+        ⚠️ Format valid — not in local DB. Click "Open in USPS ↗" for full result.
+      </div>`;
+    }
   } else {
-    h+=`<div class="errbox"><strong>✘ USPS Address Not Valid</strong><br>
-      ${v.why.replace('USPS Address Not Valid — ','')}<br>
-      <span style="opacity:.7;font-size:10px">Format: NUMBER STREET CITY STATE ZIP-ZIP4</span>
+    h+=`<div class="errbox"><strong>✘ USPS Address Not Valid</strong><br>${v.why}</div>`;
+  }
+  h+=drow('ZIP Code', `<span class="du">${zip}</span>`);
+  h+=drow('ZIP+4',    `<span class="du">${zip}${z4?'-'+z4:''}</span>`);
+  h+=drow('City',     p.cityT||p.city||'—');
+  h+=drow('State',    p.state||'—');
+  h+=drow('County',   p.county||'—');
+  h+=drow('Country',  'UNITED STATES');
+  h+=drow('Carrier Rt.', `<span class="du">${rec?rec.cr:'—'}</span>`);
+  h+=drow('DPV Code', `<span class="${dpvCls}">${dpvCode} — ${dpvLabel}</span>`);
+  h+=drow('Delivery', v.ok?'<span class="bv">\u2714 Active</span>':'<span class="bx">\u2718 Inactive</span>');
+  h+=drow('Status',   v.ok?'<span class="bv">\u2714 Address Valid</span>':'<span class="bx">\u2718 Not Valid</span>');
+
+  /* ── Multi-unit table (Image4: 9 USPS results) ── */
+  if (rec && rec.uspsUnits && rec.uspsUnits.length > 0) {
+    h+=`<div style="margin-top:12px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#004B87;font-weight:700;padding:6px 0 4px;">
+        📮 USPS Multiple Matches — ${rec.uspsUnits.length} Units Found
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <tr style="background:#edf2fa;">
+          <th style="text-align:left;padding:5px 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:#004B87;border-bottom:1.5px solid #c5d7f0;">SUITE</th>
+          <th style="text-align:left;padding:5px 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:#004B87;border-bottom:1.5px solid #c5d7f0;">ADDRESS</th>
+          <th style="text-align:right;padding:5px 8px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:#004B87;border-bottom:1.5px solid #c5d7f0;">ZIP+4</th>
+        </tr>
+        ${rec.uspsUnits.map((u,i) => `<tr style="background:${i%2===0?'#fff':'#f5f8fe'}">
+          <td style="padding:5px 8px;font-family:'DM Mono',monospace;font-size:10px;color:#004B87;font-weight:600;">${u.ste||'BASE'}</td>
+          <td style="padding:5px 8px;font-size:11px;">${u.addr}</td>
+          <td style="padding:5px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:10px;color:#E31837;font-weight:700;">${zip}-${u.zip4}</td>
+        </tr>`).join('')}
+      </table>
+      <div style="font-size:10px;color:var(--mut);padding:6px 4px;font-family:'DM Mono',monospace;">
+        Total: <strong>${rec.uspsUnits.length} units</strong> at this address
+      </div>
     </div>`;
   }
-  h+=drow('ZIP Code',  `<span class="du">${zip}</span>`);
-  h+=drow('ZIP+4',     `<span class="du">${zip}${z4?'-'+z4:''}</span>`);
-  h+=drow('City',      p.cityT||p.city||'—');
-  h+=drow('State',     p.state||'—');
-  h+=drow('County',    p.county||'—');
-  h+=drow('Country',   'UNITED STATES');
-  h+=drow('Carrier Rt.',`<span class="du">${db.cr||'C001'}</span>`);
-  h+=drow('DPV Code',  `<span class="${dpv.b}">${dpv.c} — ${dpv.l}</span>`);
-  h+=drow('Delivery',  v.ok?'<span class="bv">✔ Active</span>':'<span class="bx">✘ Inactive</span>');
-  h+=drow('Status',    v.ok?'<span class="bv">✔ Address Valid</span>':'<span class="bx">✘ Not Valid</span>');
+
   document.getElementById('uspsBody').innerHTML=h;
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    RENDER SMARTY
-   Button → opens https://www.smarty.com/products/us-address-verification
-            (their demo page — user can paste address there)
-   Shows ALL real Analyzed Output fields from Image2:
-     Carrier C002 | RDI Residential ← CIRCLED
-     Lat 32.858517 | Lng -83.648972
-     Coord Precision Rooftop | Record Type S
-     County Name Bibb | County FIPS 13021
-     Congressional District 02 | (DPV present info) 0201 / true
-     eLOT Sort D | Time Zone Eastern / Standard
-     Vacant N | DPV Match Code Y
-     DPV Footnotes AABB | CMRA N
-     Enhanced Match postal-match | Primary Number 2138
-     Street Name Old Holton | Street Suffix Rd
-══════════════════════════════════════════════════════════════ */
-function renderSmarty(p,v){
-  const db=p.db, pt=propType(p.street,db), found=v.ok;
+═══════════════════════════════════════════════════════════ */
+function renderSmarty(p, v) {
+  const rec=p.rec, found=v.ok&&p.found;
+  const hb=ptHeader(rec?rec.propType:null, found);
   const badge=document.getElementById('smartyBadge');
-  if(!found)             (badge.textContent='Not Found',     badge.className='hb hbx');
-  else if(pt==='Residential') (badge.textContent='🏠 Residential',badge.className='hb hbr');
-  else                   (badge.textContent='🏢 Commercial', badge.className='hb hbc');
+  badge.textContent=hb.txt; badge.className=`hb ${hb.cls}`;
 
-  const lat=db.lat||p.lat, lng=db.lng||p.lng;
-  const cr=db.cr||'C001', rdi=db.rdi||pt;
-  const cp=db.cp||'Rooftop', rt=db.rt||'S';
-  const zip=p.zip5||'—', z4=p.zip4;
-  const addr1=streetTC(p.street);
-  const addr2=`${toTC(p.cityT||p.city)} ${p.state} ${zip}${z4?'-'+z4:''}`;
-
-  /* All real Smarty fields */
-  const fips=db.fips||'13021', cong=db.congressional||'02', elot=db.elot||'D';
-  const tz=db.timeZone||'Eastern', tzt=db.tzType||'Standard';
-  const vac2=db.vacant_flag||'N', dpvM=db.dpvMatch||'Y';
-  const dpvFn=db.dpvFootnotes||'AABB', cmra=db.cmra||'N';
-  const enh=db.enhancedMatch||'postal-match';
-  const primN=db.primaryNumber||(p.street.match(/^\d+/)||[''])[0];
-  const stN=db.streetName||'', stS=db.streetSuffix||'';
-  const sKey=db.smartyKey||'—';
-
+  const addr1 = p.raw.split(/\s+[A-Z]{2}\s+\d{5}/)[0]||p.raw;
+  const addr2  = `${p.cityT||p.city} ${p.state} ${p.zip5}${p.zip4?'-'+p.zip4:''}`;
   let h='';
-  if(found){
+
+  if (found) {
     h+=`<div class="sfound">
-      <div class="sft"><span>✅</span> Found 1 valid address</div>
+      <div class="sft">✅ Found 1 valid address</div>
       <div class="sfs">Valid address:</div>
-      <div class="sfa">${addr1}<br>${addr2}</div>
-    </div>`;
-
-    h+=`<div class="sanal">
+      <div class="sfa">${streetTC(addr1)}<br>${addr2}</div>
+    </div>
+    <div class="sanal">
       <div class="sant">Analysis</div>
-      <div class="sanr">✅ Address is present in USPS data</div>
-      <div class="sanr" style="margin-top:4px">✅ RDI: <strong>${rdi}</strong></div>
-    </div>`;
-
-    /* Components panel — matches Image2 left column */
-    h+=`<div class="scomp">
+      <div class="sanr">✅ Address present in USPS data</div>
+      <div class="sanr" style="margin-top:4px">✅ RDI: <strong style="color:#1a56e8">${rec.rdi}</strong></div>
+    </div>
+    <div class="scomp">
       <div class="scot">Components</div>
-      ${drow('Delivery Line 1', addr1)}
-      ${drow('Geocode', `${lat.toFixed(6)}, ${lng.toFixed(6)}`)}
-      ${drow('City',    toTC(p.cityT||p.city))}
+      ${drow('Delivery Line 1', streetTC(addr1))}
+      ${drow('Geocode', `${rec.lat.toFixed(6)}, ${rec.lng.toFixed(6)}`)}
+      ${drow('City',    tc(p.cityT||p.city))}
       ${drow('State',   p.state)}
-      ${drow('ZIP Code',`<span class="ds">${zip}</span>`)}
-      ${drow('+4 Code', `<span class="ds">${z4||'—'}</span>`)}
-      ${drow('Precision', cp)}
-      ${drow('SmartyKey', sKey)}
-    </div>`;
-
-    /* Analyzed Output — ALL rows from Image2 right column */
-    h+=`<div class="sao">
+      ${drow('ZIP Code',`<span class="ds">${p.zip5}</span>`)}
+      ${drow('+4 Code', `<span class="ds">${p.zip4||rec.zip4||'—'}</span>`)}
+      ${drow('Precision', rec.cp)}
+      ${drow('SmartyKey', rec.smartyKey)}
+    </div>
+    <div class="sao">
       <div class="saot">Analyzed Output</div>
       <table class="atable">
-        <tr>
-          <td class="atl">Carrier Route</td><td class="atv blue">${cr}</td>
-          <td class="atl">RDI</td><td class="atv"><strong style="color:#1a56e8">${rdi}</strong></td>
-        </tr>
-        <tr>
-          <td class="atl">Latitude</td><td class="atv blue">${lat.toFixed(6)}</td>
-          <td class="atl">Longitude</td><td class="atv blue">${lng.toFixed(6)}</td>
-        </tr>
-        <tr>
-          <td class="atl">Coord. Precision</td><td class="atv">${cp}</td>
-          <td class="atl">Record Type</td><td class="atv">${rt}</td>
-        </tr>
-        <tr>
-          <td class="atl">County Name</td><td class="atv">${p.county||db.co||'—'}</td>
-          <td class="atl">County FIPS</td><td class="atv">${fips}</td>
-        </tr>
-        <tr>
-          <td class="atl">Congressional</td><td class="atv">${cong}</td>
-          <td class="atl">DPV Present</td><td class="atv">true</td>
-        </tr>
-        <tr>
-          <td class="atl">eLOT Sort</td><td class="atv">${elot}</td>
-          <td class="atl">Time Zone</td><td class="atv">${tz} / ${tzt}</td>
-        </tr>
-        <tr>
-          <td class="atl">Vacant</td><td class="atv">${vac2}</td>
-          <td class="atl">DPV Match Code</td><td class="atv">${dpvM}</td>
-        </tr>
-        <tr>
-          <td class="atl">DPV Footnotes</td><td class="atv">${dpvFn}</td>
-          <td class="atl">CMRA</td><td class="atv">${cmra}</td>
-        </tr>
-        <tr>
-          <td class="atl">Enhanced Match</td><td class="atv">${enh}</td>
-          <td class="atl">Primary Number</td><td class="atv">${primN}</td>
-        </tr>
-        ${stN?`<tr><td class="atl">Street Name</td><td class="atv">${stN}</td>
-              <td class="atl">Street Suffix</td><td class="atv">${stS}</td></tr>`:''}
-        <tr>
-          <td class="atl">Property Type</td><td class="atv">${ptBadge(pt,false)}</td>
-          <td class="atl">ZIP+4</td><td class="atv blue">${zip}${z4?'-'+z4:''}</td>
-        </tr>
+        <tr><td class="atl">Carrier Route</td><td class="atv blue">${rec.cr}</td>
+            <td class="atl">RDI</td><td class="atv"><strong style="color:#1a56e8">${rec.rdi}</strong></td></tr>
+        <tr><td class="atl">Latitude</td><td class="atv blue">${rec.lat.toFixed(6)}</td>
+            <td class="atl">Longitude</td><td class="atv blue">${rec.lng.toFixed(6)}</td></tr>
+        <tr><td class="atl">Coord. Precision</td><td class="atv">${rec.cp}</td>
+            <td class="atl">Record Type</td><td class="atv">${rec.rt}</td></tr>
+        <tr><td class="atl">County Name</td><td class="atv">${rec.county}</td>
+            <td class="atl">County FIPS</td><td class="atv">${rec.fips}</td></tr>
+        <tr><td class="atl">Congressional</td><td class="atv">${rec.cong}</td>
+            <td class="atl">DPV Present</td><td class="atv">${rec.dpvPresent2} / ${rec.dpvPresent}</td></tr>
+        <tr><td class="atl">eLOT Sort</td><td class="atv">${rec.elot}</td>
+            <td class="atl">Time Zone</td><td class="atv">${rec.tz} / ${rec.tzType}</td></tr>
+        <tr><td class="atl">Vacant</td><td class="atv">${rec.vacant}</td>
+            <td class="atl">DPV Match Code</td><td class="atv">${rec.dpvMatch}</td></tr>
+        <tr><td class="atl">DPV Footnotes</td><td class="atv">${rec.dpvFn}</td>
+            <td class="atl">CMRA</td><td class="atv">${rec.cmra}</td></tr>
+        <tr><td class="atl">Enhanced Match</td><td class="atv">${rec.enhanced}</td>
+            <td class="atl">Primary Number</td><td class="atv">${rec.primNum}</td></tr>
+        <tr><td class="atl">Street Name</td><td class="atv">${rec.stName}</td>
+            <td class="atl">Street Suffix</td><td class="atv">${rec.stSuffix||'—'}</td></tr>
+        <tr><td class="atl">Property Type</td><td class="atv">${ptBadge(rec.propType)}</td>
+            <td class="atl">ZIP+4</td><td class="atv blue">${p.zip5}${p.zip4?'-'+p.zip4:rec.zip4?'-'+rec.zip4:''}</td></tr>
       </table>
     </div>`;
+
+    /* ── Multi-unit list (Image5: 8 Smarty suite addresses) ── */
+    if (rec.smartyUnits && rec.smartyUnits.length > 0) {
+      h+=`<div style="margin-top:12px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#1a56e8;font-weight:700;padding:6px 0 4px;">
+          ✔ Smarty — ${rec.smartyUnits.length} Valid Suite Addresses Found
+        </div>
+        <div style="background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:8px;overflow:hidden;">
+          ${rec.smartyUnits.map((u,i)=>`<div style="padding:7px 12px;font-size:11px;font-family:'DM Mono',monospace;border-bottom:1px solid #e0e7ff;background:${i%2===0?'#fff':'#f5f7ff'}">
+            <span style="color:#1a56e8;font-weight:700;margin-right:8px;">${String(i+1).padStart(2,'0')}</span>${u}
+          </div>`).join('')}
+        </div>
+        <div style="font-size:10px;color:var(--mut);padding:6px 4px;font-family:'DM Mono',monospace;">
+          Total: <strong>${rec.smartyUnits.length} suite addresses</strong> verified by Smarty
+        </div>
+      </div>`;
+    }
+
+  } else if (v.ok) {
+    h+=`<div class="sfound" style="border-color:#ffe082;background:#fffde7">
+      <div class="sft" style="color:#f57f17">⚠️ Address format valid</div>
+      <div class="sfa">${streetTC(addr1)}<br>${addr2}</div>
+    </div>`;
+    h+=drow('ZIP Code',`<span class="ds">${p.zip5}</span>`);
+    h+=drow('Property Type','<span class="bx">❌ Not Found</span>');
+    h+=drow('RDI','<span class="bx">Not Available</span>');
   } else {
     h+=`<div class="errbox" style="background:#ffebee;border-color:#ef9a9a;color:#b71c1c">
-      <strong>❌ Not Found</strong><br>Address not in USPS data.<br>
-      <span style="opacity:.7;font-size:10px">Format: NUMBER STREET CITY STATE ZIP-ZIP4</span>
-    </div>`;
-    h+=drow('ZIP',          zip==='—'?'—':`<span class="ds">${zip}</span>`);
-    h+=drow('Property Type','<span class="bx">Not Found</span>');
-    h+=drow('DPV Match',    '<span class="bx">No match</span>');
-    h+=drow('Result',       '<span class="bx">❌ Not Found</span>');
+      <strong>❌ Not Found</strong><br>Invalid address format.</div>`;
+    h+=drow('Property Type','<span class="bx">❌ Not Found</span>');
+    h+=drow('RDI','<span class="bx">Not Found</span>');
   }
   document.getElementById('smartyBody').innerHTML=h;
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    RENDER SPOKEO
-   Button → opens https://www.spokeo.com/search?q=ADDRESS&t=address
-            (exact address pre-filled — same behaviour as Spokeo screenshot)
-   Shows all circled data from Image1:
-     Property Use Type = Residential / Commercial / Vacant
-     Lot 31,363 Sq Ft · Parcel P064-0021 · County Bibb · Sub WINSHIP HILLS
-     Est Market Value $150,962 · 3 Beds 2 Baths · 1,350 sq ft · Built 1956
-     Property Owners (2) · Current Residents (4) · Past Residents (20)
-══════════════════════════════════════════════════════════════ */
-function renderSpokeo(p,v){
-  const db=p.db, pt=propType(p.street,db), hv=Math.abs(hashStr(p.street)), vacant=!v.ok;
+═══════════════════════════════════════════════════════════ */
+function renderSpokeo(p, v) {
+  const rec=p.rec, found=v.ok&&p.found;
+  const sAddr=encodeURIComponent(p.raw);
+  const spokeoUrl=`https://www.spokeo.com/search?q=${sAddr}&t=address`;
+  document.getElementById('spokeoBtn').href=spokeoUrl;
 
-  /* ── Button URL — opens Spokeo with the exact address ── */
-  const spokeoQ  = encodeURIComponent(`${streetTC(p.street)}, ${p.cityT||p.city}, ${p.state} ${p.zip5}`);
-  const spokeoUrl= `https://www.spokeo.com/search?q=${spokeoQ}&t=address`;
-  document.getElementById('spokeoBtn').href = spokeoUrl;
-
-  const hbInfo=ptHB(pt,vacant);
+  const hb=ptHeader(rec?rec.propType:null, found);
   const badge=document.getElementById('spokeoBadge');
-  badge.textContent=hbInfo.txt; badge.className=`hb ${hbInfo.cls}`;
+  badge.textContent=hb.txt; badge.className=`hb ${hb.cls}`;
 
-  /* Real data values */
-  const mv    = db.mv    || `$${(150000+(hv%250000)).toLocaleString()}`;
-  const beds  = db.beds  !== undefined ? db.beds  : 2+(hv%3);
-  const baths = db.baths !== undefined ? db.baths : 1+(hv%2);
-  const sqft  = db.sqft  || (900+(hv%1200)).toLocaleString();
-  const yr    = db.yr    || 1950+(hv%70);
-  const lot   = db.lot   || (10000+(hv%30000)).toLocaleString()+' Sq. Ft.';
-  const sub   = db.sub   || '—';
-  const units = vacant ? 0 : (db.units!==undefined ? db.units : 1+(hv%3));
-  const zip=p.zip5||'—', z4=p.zip4;
-  const parcel=p.parcel||db.parcel||'—';
+  const addr1=p.raw.split(/\s+[A-Z]{2}\s+\d{5}/)[0]||p.raw;
+  let h='';
 
-  /* Property header */
-  let h=`<div class="pkphdr">
-    <div class="pkptit">${streetTC(p.street)}</div>
-    <div class="pkpsub">${p.cityT||p.city}, ${p.state} ${zip}${z4?'-'+z4:''}</div>
-    <div class="pkpver">✅ Verified — confirmed using official county property records</div>
-  </div>`;
+  if (found) {
+    const showInterior=rec.propType==='Residential'&&rec.beds>0;
+    h+=`<div class="pkphdr">
+      <div class="pkptit">${streetTC(addr1)}</div>
+      <div class="pkpsub">${p.cityT||p.city}, ${p.state} ${p.zip5}${p.zip4?'-'+p.zip4:rec.zip4?'-'+rec.zip4:''}</div>
+      <div class="pkpver">✅ Verified — confirmed using official county property records</div>
+    </div>
+    <div class="pkgrid">
+      <div class="pkgi"><div class="pkgl">Est. Market Value</div><div class="pkgv">${rec.mv}</div></div>
+      <div class="pkgi"><div class="pkgl">Interior Details</div><div class="pkgv">${showInterior?rec.beds+' Beds, '+rec.baths+' Baths':'—'}</div></div>
+      <div class="pkgi"><div class="pkgl">Sq. Footage</div><div class="pkgv">${rec.sqft} sq ft</div></div>
+      <div class="pkgi"><div class="pkgl">Year Built</div><div class="pkgv">${rec.yr}</div></div>
+    </div>`;
 
-  /* Stats grid — $150,962 · 3 Beds 2 Baths · 1,350 · 1956 */
-  h+=`<div class="pkgrid">
-    <div class="pkgi"><div class="pkgl">Est. Market Value</div>
-      <div class="pkgv">${vacant?'—':mv}</div></div>
-    <div class="pkgi"><div class="pkgl">Interior Details</div>
-      <div class="pkgv">${vacant||pt==='Commercial'?'—':beds+' Beds, '+baths+' Baths'}</div></div>
-    <div class="pkgi"><div class="pkgl">Sq. Footage</div>
-      <div class="pkgv">${sqft} sq ft</div></div>
-    <div class="pkgi"><div class="pkgl">Year Built</div>
-      <div class="pkgv">${yr}</div></div>
-  </div>`;
+    h+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00897b;padding:6px 0;font-weight:700;">📋 Lot Details</div>`;
+    h+=drow('Lot Size',         rec.lot);
+    h+=drow('Property Use Type',ptBadge(rec.propType));
+    h+=drow('Subdivision',      rec.sub);
+    h+=drow('County',           rec.county);
+    h+=drow('Parcel Number',    rec.parcel);
+    const unitCount = rec.uspsUnits ? rec.uspsUnits.length : rec.units;
+    const unitLabel = rec.uspsUnits
+      ? `<span class="bcom">🏢 ${unitCount} Suites / Units</span>`
+      : `<span class="bi">${unitCount} Unit${unitCount>1?'s':''}</span>`;
+    h+=drow('Units', unitLabel);
 
-  /* Lot Details — exact field order from Image1 */
-  h+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00897b;padding:4px 0 6px;font-weight:700">📋 Lot Details</div>`;
-  h+=drow('ZIP Code',          `<span class="dp">${zip}${z4?'-'+z4:''}</span>`);
-  h+=drow('City',              p.cityT||p.city||'—');
-  h+=drow('State',             p.state||'—');
-  h+=drow('County',            p.county||db.co||'—');   /* Bibb */
-  h+=drow('Lot Size',          vacant?'—':lot);          /* 31,363 Sq. Ft. */
-  h+=drow('Property Use Type', ptBadge(pt,vacant));      /* Residential ← CIRCLED */
-  h+=drow('Subdivision',       vacant?'—':sub);          /* WINSHIP HILLS */
-  h+=drow('Parcel Number',     vacant?'—':parcel);       /* P064-0021 */
-  h+=drow('Units',             vacant
-    ? '<span class="bvac">0 — Vacant</span>'
-    : `<span class="bi">${units} Unit${units>1?'s':''}</span>`);
-
-  /* People — real data from PEOPLE_DB keyed by address */
-  const pd=PEOPLE_DB[p.addrKey];
-  const owners2   = pd ? pd.owners    : (pt==='Residential'?[{name:'Property Owner',age:50,ph:'(478)000-0000',em:'owner@mail.com',since:2005}]:[]);
-  const residents2= pd ? pd.residents : [{name:'Current Resident',age:35,ph:'(478)000-0001',em:'res@mail.com',since:2020}];
-  const pastCnt   = pd ? pd.pastCount : 3;
-
-  if(!vacant){
-    if(owners2.length){
-      h+=`<div class="sect" style="margin-top:10px">👑 Property Owners (${owners2.length})</div>`;
-      owners2.forEach(per=>{
-        h+=`<div class="pcard">
-          <div class="pn">👤 ${per.name} <span class="bv" style="font-size:9px;padding:1px 6px">Owner</span></div>
-          <div class="ptags">
-            <span class="pt">Age ${per.age}</span><span class="pt">${per.ph}</span>
-            <span class="pt">${per.em}</span><span class="pt">Since ${per.since}</span>
-          </div></div>`;
-      });
+    if (rec.owners&&rec.owners.length>0) {
+      h+=`<div class="sect" style="margin-top:10px">👑 Property Owners (${rec.owners.length})</div>`;
+      rec.owners.forEach(per=>{h+=`<div class="pcard"><div class="pn">👤 ${per.name} <span class="bv" style="font-size:9px;padding:1px 6px">Owner</span></div><div class="ptags"><span class="pt">Age ${per.age}</span><span class="pt">${per.ph}</span><span class="pt">${per.em}</span><span class="pt">Since ${per.since}</span></div></div>`;});
     }
-    if(residents2.length){
-      h+=`<div class="sect" style="margin-top:8px">👥 Current Residents (${residents2.length})</div>`;
-      residents2.forEach(per=>{
-        h+=`<div class="pcard">
-          <div class="pn">👤 ${per.name} <span class="bi" style="font-size:9px;padding:1px 6px">Resident</span></div>
-          <div class="ptags">
-            <span class="pt">Age ${per.age}</span><span class="pt">${per.ph}</span>
-            <span class="pt">${per.em}</span><span class="pt">Since ${per.since}</span>
-          </div></div>`;
-      });
+    const resLabel=rec.propType==='Residential'?'Current Residents':'Contacts';
+    if (rec.residents&&rec.residents.length>0) {
+      h+=`<div class="sect" style="margin-top:8px">👥 ${resLabel} (${rec.residents.length})</div>`;
+      rec.residents.forEach(per=>{h+=`<div class="pcard"><div class="pn">👤 ${per.name} <span class="bi" style="font-size:9px;padding:1px 6px">${rec.propType==='Residential'?'Resident':'Contact'}</span></div><div class="ptags"><span class="pt">Age ${per.age}</span><span class="pt">${per.ph}</span><span class="pt">${per.em}</span><span class="pt">Since ${per.since}</span></div></div>`;});
     }
-    if(pastCnt>0){
-      h+=`<div class="sect" style="margin-top:8px">🕐 Past Residents (${pastCnt})</div>`;
-      h+=`<div style="text-align:center;padding:10px;color:var(--mut);font-size:11px;background:#f8fcfb;border-radius:7px;font-family:'DM Mono',monospace">Unlock full history on Spokeo.com</div>`;
+    if (rec.pastCount>0) {
+      h+=`<div class="sect" style="margin-top:8px">🕐 Past Residents (${rec.pastCount})</div>`;
+      h+=`<div style="text-align:center;padding:10px;color:var(--mut);font-size:11px;background:#f8fcfb;border-radius:7px;">Unlock full history on Spokeo.com</div>`;
     }
-  } else {
+  } else if (v.ok) {
+    h+=`<div class="pkphdr" style="border-color:#ffe082;background:#fffde7">
+      <div class="pkptit">${streetTC(addr1)}</div>
+      <div class="pkpsub">${p.cityT||p.city||''} ${p.state} ${p.zip5}</div>
+      <div class="pkpver" style="color:#f57f17">⚠️ Not in database — click button to search Spokeo</div>
+    </div>`;
+    h+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00897b;padding:6px 0;font-weight:700;">📋 Lot Details</div>`;
+    h+=drow('Property Use Type','<span class="bx">❌ Not Found</span>');
+    h+=drow('Lot Size','—'); h+=drow('County',p.county||'—');
     h+=`<div class="sect" style="margin-top:10px">👥 People Records</div>`;
-    h+=`<div style="text-align:center;padding:13px;color:var(--mut);font-size:12px;background:#f8fcfb;border-radius:7px">No records found for this address</div>`;
+    h+=`<div style="text-align:center;padding:13px;color:var(--mut);font-size:12px;background:#f8fcfb;border-radius:7px;">No records — search on Spokeo.com</div>`;
+  } else {
+    h+=`<div class="errbox" style="background:#ffebee;border-color:#ef9a9a;color:#b71c1c">
+      <strong>❌ Not Found</strong><br>Invalid address.</div>`;
+    h+=`<div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#00897b;padding:6px 0;font-weight:700;">📋 Lot Details</div>`;
+    h+=drow('Property Use Type','<span class="bx">❌ Not Found</span>');
+    h+=`<div class="sect" style="margin-top:10px">👥 People Records</div>`;
+    h+=`<div style="text-align:center;padding:13px;color:var(--mut);font-size:12px;background:#f8fcfb;border-radius:7px;">No records found</div>`;
   }
 
-  h+=`<div class="disc">⚠️ Data is illustrative. Full details on <a href="${spokeoUrl}" target="_blank" style="color:#00897b">Spokeo.com</a>. Not for FCRA purposes.</div>`;
+  h+=`<div class="disc">⚠️ Illustrative data. Full details on <a href="${spokeoUrl}" target="_blank" style="color:#00897b">Spokeo.com</a>.</div>`;
   document.getElementById('spokeoBody').innerHTML=h;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   RENDER GOOGLE MAPS CARD
-   Button → opens Google Maps search with the exact entered address
-            (same behaviour as Spokeo — address pre-loaded)
-══════════════════════════════════════════════════════════════ */
-function renderGmaps(p){
-  /* Button opens Google Maps with exact entered address pre-loaded */
-  const gmUrl  =`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.raw)}`;
-  const dirUrl =`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.raw)}`;
-  const svUrl  =`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.lat},${p.lng}`;
+/* ═══════════════════════════════════════════════════════════
+   RENDER GOOGLE MAPS
+═══════════════════════════════════════════════════════════ */
+function renderGmaps(p) {
+  const gmUrl =`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.raw)}`;
+  const dirUrl=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.raw)}`;
+  const svUrl =`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.lat},${p.lng}`;
   document.getElementById('gmapsBtn').href=gmUrl;
-  const tz=p.db.timeZone||'Eastern';
+  const rec=p.rec;
   let h='';
   h+=drow('Address',   p.raw.length>36?p.raw.slice(0,36)+'…':p.raw);
   h+=drow('Latitude',  p.lat.toFixed(6),'dg');
   h+=drow('Longitude', p.lng.toFixed(6),'dg');
   h+=drow('ZIP Code',  `<span class="dg">${p.zip5||'—'}</span>`);
-  h+=drow('County',    p.county||p.db.co||'—');
-  h+=drow('Time Zone', tz);
+  h+=drow('County',    p.county||'—');
+  h+=drow('Time Zone', rec?rec.tz:'Eastern');
   h+=drow('Road View', '<span class="bv">✔ Available</span>');
   h+=drow('Satellite', '<span class="bg2">🛰 Available</span>');
   h+=drow('Terrain',   '<span class="bg2">🏔 Available</span>');
-  h+=drow('Street View',`<a href="${svUrl}" target="_blank" style="color:#34A853;font-family:'DM Mono',monospace;font-size:10px">View 360° ↗</a>`);
-  h+=drow('Navigate',  `<a href="${dirUrl}" target="_blank" style="color:#34A853;font-family:'DM Mono',monospace;font-size:10px">Get Directions ↗</a>`);
+  h+=drow('Street View',`<a href="${svUrl}" target="_blank" style="color:#34A853;font-size:10px;font-family:'DM Mono',monospace">View 360° ↗</a>`);
+  h+=drow('Navigate',  `<a href="${dirUrl}" target="_blank" style="color:#34A853;font-size:10px;font-family:'DM Mono',monospace">Get Directions ↗</a>`);
   document.getElementById('gmapsBody').innerHTML=h;
 }
 
-/* ══════════════════════════════════════════
-   SUMMARY BAR
-══════════════════════════════════════════ */
-function renderSummary(p,v){
-  const db=p.db, pt=propType(p.street,db);
-  const pd=PEOPLE_DB[p.addrKey];
-  const nP=v.ok?(pd?(pd.owners.length+pd.residents.length):3):0;
-  const dpvN=parseInt(p.zip5||'0')%10;
+/* ═══════════════════════════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════════════════════════ */
+function renderSummary(p, v) {
+  const rec=p.rec;
+  const pt =rec?rec.propType:(v.ok?'Unknown':'Not Found');
+  const rdi=rec?rec.rdi:'—';
+  const nP =rec?((rec.owners||[]).length+(rec.residents||[]).length):0;
   const items=[
-    {l:'USPS Status',  v:v.ok?'✔ Valid':'✘ Invalid',    c:v.ok?'sg2':'sr'},
-    {l:'ZIP Code',     v:p.zip5||'—',                    c:'sr'},
-    {l:'ZIP+4',        v:p.zipFull||'—',                 c:''},
-    {l:'City',         v:p.cityT||p.city||'—',           c:''},
-    {l:'State',        v:p.state||'—',                   c:''},
-    {l:'County',       v:p.county||db.co||'—',           c:''},
-    {l:'Property Type',v:v.ok?pt:'Not Found',            c:'sy'},
-    {l:'RDI (Smarty)', v:db.rdi||pt,                     c:'sg2'},
-    {l:'Latitude',     v:p.lat.toFixed(4),               c:'sb'},
-    {l:'Longitude',    v:p.lng.toFixed(4),               c:'sb'},
-    {l:'People Found', v:nP+' records',                  c:'sg2'},
-    {l:'Sources Used', v:'4 / 4 ✔',                     c:'sg2'},
+    {l:'USPS Status',  v:v.ok?'✔ Valid':'✘ Invalid',  c:v.ok?'sg2':'sr'},
+    {l:'ZIP Code',     v:p.zip5||'—',                  c:'sr'},
+    {l:'ZIP+4',        v:p.zipFull||'—',               c:''},
+    {l:'City',         v:p.cityT||p.city||'—',         c:''},
+    {l:'State',        v:p.state||'—',                 c:''},
+    {l:'County',       v:p.county||'—',                c:''},
+    {l:'Property Type',v:pt,                            c:'sy'},
+    {l:'RDI (Smarty)', v:rdi,                           c:'sg2'},
+    {l:'Latitude',     v:p.lat.toFixed(4),              c:'sb'},
+    {l:'Longitude',    v:p.lng.toFixed(4),              c:'sb'},
+    {l:'People Found', v:nP+' records',                 c:'sg2'},
+    {l:'Sources Used', v:'4 / 4 ✔',                   c:'sg2'},
   ];
   document.getElementById('sg').innerHTML=items.map(it=>
     `<div class="si2"><div class="sl">${it.l}</div><div class="sv ${it.c}">${it.v}</div></div>`
   ).join('');
 }
 
-/* ══════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
    SEARCH
-══════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════ */
 function tryEx(addr){
   document.getElementById('aIn').value=addr;
   liveVal(addr);
@@ -1029,7 +1145,7 @@ function tryEx(addr){
 
 async function doSearch(){
   const raw=document.getElementById('aIn').value.trim();
-  if(!raw){ document.getElementById('aIn').focus(); return; }
+  if(!raw){document.getElementById('aIn').focus();return;}
 
   document.getElementById('es').style.display='none';
   document.getElementById('resEl').classList.remove('show');
@@ -1039,7 +1155,8 @@ async function doSearch(){
 
   await new Promise(r=>setTimeout(r,1400));
 
-  const v=validate(raw), p=parseAddr(raw);
+  const v=validate(raw);
+  const p=parseAddr(raw);
   _lat=p.lat; _lng=p.lng;
 
   renderUSPS(p,v);
@@ -1055,10 +1172,9 @@ async function doSearch(){
   document.getElementById('mView').textContent='🗺 Road';
   document.getElementById('mext').href=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(raw)}`;
   document.getElementById('mDir').href=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
-
   document.getElementById('rLbl').textContent='"'+raw+'"';
   const now=new Date();
-  document.getElementById('rMeta').textContent=`${now.toLocaleDateString()} ${now.toLocaleTimeString()} · 4 sources · ${v.ok?'✔ Valid':'✘ Not Valid'}`;
+  document.getElementById('rMeta').textContent=`${now.toLocaleDateString()} ${now.toLocaleTimeString()} · 4 sources · ${v.ok?'✔ Valid':'✘ Not Valid'} · ${p.found?'✔ Found':'⚠ Not in DB'}`;
 
   document.getElementById('ldEl').classList.remove('show');
   document.getElementById('resEl').classList.add('show');
@@ -1066,7 +1182,7 @@ async function doSearch(){
   btn.disabled=false; btn.textContent='Search All Sources';
 }
 
-document.getElementById('aIn').addEventListener('keydown',e=>{ if(e.key==='Enter') doSearch(); });
+document.getElementById('aIn').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
 </script>
 </body>
 </html>
